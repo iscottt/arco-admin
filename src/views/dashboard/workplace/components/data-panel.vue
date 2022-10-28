@@ -12,16 +12,14 @@
           />
         </a-avatar>
         <a-statistic
-          :title="$t('workplace.onlineContent')"
+          title="内容数据"
           :value="373.5"
           :precision="1"
           :value-from="0"
           animation
           show-group-separator
         >
-          <template #suffix>
-            W+ <span class="unit">{{ $t('workplace.pecs') }}</span>
-          </template>
+          <template #suffix> W+ <span class="unit">个</span> </template>
         </a-statistic>
       </a-space>
     </a-grid-item>
@@ -37,14 +35,14 @@
           />
         </a-avatar>
         <a-statistic
-          :title="$t('workplace.putIn')"
+          title="投放中内容"
           :value="368"
           :value-from="0"
           animation
           show-group-separator
         >
           <template #suffix>
-            <span class="unit">{{ $t('workplace.pecs') }}</span>
+            <span class="unit">个</span>
           </template>
         </a-statistic>
       </a-space>
@@ -61,14 +59,14 @@
           />
         </a-avatar>
         <a-statistic
-          :title="$t('workplace.newDay')"
+          title="日新增评论"
           :value="8874"
           :value-from="0"
           animation
           show-group-separator
         >
           <template #suffix>
-            <span class="unit">{{ $t('workplace.pecs') }}</span>
+            <span class="unit">个</span>
           </template>
         </a-statistic>
       </a-space>
@@ -86,7 +84,7 @@
           />
         </a-avatar>
         <a-statistic
-          :title="$t('workplace.newFromYesterday')"
+          title="较昨日新增"
           :value="2.8"
           :precision="1"
           :value-from="0"

@@ -22,12 +22,6 @@ const useUserStore = defineStore('user', {
     token: getToken(),
   }),
 
-  getters: {
-    userInfo(state: UserState): UserState {
-      return { ...state };
-    },
-  },
-
   actions: {
     // Set user's information
     setInfo(userInfo: Auth.UserInfo) {

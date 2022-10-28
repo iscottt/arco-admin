@@ -47,7 +47,7 @@
             >
               <IconUser />
             </a-avatar>
-            <span>super_admin</span>
+            <span>{{ userInfo.operatorName }}</span>
           </div>
           <template #content>
             <a-doption>
@@ -70,10 +70,16 @@
 </template>
 
 <script lang="ts" setup>
-  import { inject } from 'vue';
+  import { computed, inject } from 'vue';
   import { useFullscreen } from '@vueuse/core';
   import { useAppStore } from '@/store';
   import useUser from '@/hooks/user';
+  import { useUserStore } from '@/store';
+
+  const userStore = useUserStore();
+  const userInfo = computed(() => {
+    return userStore.userInfo;
+  });
 
   const appStore = useAppStore();
   const { logout } = useUser();
