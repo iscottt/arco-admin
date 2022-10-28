@@ -3,23 +3,15 @@
     <a-breadcrumb-item>
       <icon-apps />
     </a-breadcrumb-item>
-    <a-breadcrumb-item v-for="item in items" :key="item">
-      {{ item }}
+    <a-breadcrumb-item v-for="item in route.matched" :key="item.name">
+      {{ item.meta.locale }}
     </a-breadcrumb-item>
   </a-breadcrumb>
 </template>
 
 <script lang="ts" setup>
-  import { PropType } from 'vue';
-
-  defineProps({
-    items: {
-      type: Array as PropType<string[]>,
-      default() {
-        return [];
-      },
-    },
-  });
+  import { useRoute } from 'vue-router';
+  const route = useRoute();
 </script>
 
 <style scoped lang="less">

@@ -45,7 +45,7 @@ export async function createDynamicRouteGuard(
   // }
   if (isLogin) {
     if (to.name === 'login') {
-      next({ name: 'root' });
+      next({ name: 'Workplace' });
     } else {
       const hasRoute = router.hasRoute(to.name!);
       if (!route.menus.length) {
