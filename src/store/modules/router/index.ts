@@ -85,7 +85,7 @@ const transformAuthRouteToVueRoute = (item: any) => {
         name: item.funcUrl.replace('/', '').replace(new RegExp('/', 'g'), '_'),
         meta: {
           locale: item.funcName,
-          icon: 'icon-dashboard',
+          icon: 'icon-file',
           order: item.sortId,
         },
       };
@@ -132,7 +132,7 @@ const transformAuthRouteToMenu = (routes: any[]): any[] => {
         path: route.funcUrl,
         meta: {
           locale: route.funcName,
-          icon: 'icon-dashboard',
+          icon: route.parentId == 0 ? 'icon-file' : null,
           order: route.sortId,
         },
       },

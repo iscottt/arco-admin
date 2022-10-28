@@ -42,9 +42,10 @@ export default function useMenuTree() {
 
         return null;
       });
+      console.log('collector', collector);
       return collector.filter(Boolean);
     }
-    return travel(copyRouter, 0);
+    return copyRouter;
   });
 
   return {

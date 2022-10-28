@@ -30,6 +30,12 @@
           :closable="false"
           @cancel="drawerCancel"
         >
+          <template #title>
+            <div class="flex-center">
+              <img src="@/assets/images/logo.png" width="20" class="mr-2" alt="" />
+              <span>浙江省荣军医院质控平台</span>
+            </div>
+          </template>
           <Menu />
         </a-drawer>
         <a-layout class="layout-content" :style="paddingStyle">
