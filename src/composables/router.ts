@@ -34,7 +34,7 @@ export function useRouterPush(inSetup = true) {
    * @param newTab - 在新的浏览器标签打开
    */
   function toHome(newTab = false) {
-    routerPush({ name: 'Workplace' }, newTab);
+    routerPush({ path: '/dashboard/workplace' }, newTab);
   }
 
   /**

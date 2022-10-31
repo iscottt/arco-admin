@@ -1,5 +1,5 @@
 <template>
-  <div class="container">
+  <div class="s-container">
     <div class="content">
       <a-card class="py-6 px-3 rounded-5px">
         <LoginForm />
@@ -18,7 +18,7 @@
 </script>
 
 <style lang="less" scoped>
-  .container {
+  .s-container {
     display: flex;
     width: 100vw;
     max-width: initial;

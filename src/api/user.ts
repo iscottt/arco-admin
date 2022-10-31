@@ -1,5 +1,4 @@
 import axios from 'axios';
-import type { RouteRecordNormalized } from 'vue-router';
 import { http } from './httpUtil';
 export interface LoginData {
   operatorCode: string;
@@ -29,7 +28,10 @@ export function getUserInfo(operatorId) {
     data: { operatorId },
   });
 }
-
-export function getMenuList() {
-  return axios.post<RouteRecordNormalized[]>('/api/user/menu');
+export function resetUserPassword(data) {
+  return http.request({
+    url: '/100006',
+    method: 'POST',
+    data,
+  });
 }

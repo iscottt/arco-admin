@@ -51,7 +51,7 @@
           </div>
           <template #content>
             <a-doption>
-              <a-space @click="handleLogout">
+              <a-space @click="resetPwd">
                 <icon-edit />
                 <span> 修改密码 </span>
               </a-space>
@@ -88,6 +88,10 @@
     logout();
   };
   const toggleDrawerMenu = inject('toggleDrawerMenu');
+  const togglePwd = inject('togglePwd');
+  const resetPwd = () => {
+    (togglePwd as any)();
+  };
 </script>
 
 <style scoped lang="less">

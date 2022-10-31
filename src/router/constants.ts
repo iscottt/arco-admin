@@ -1,7 +1,4 @@
-export const WHITE_LIST = [
-  { name: 'not-found-page', children: [] },
-  { name: 'login', children: [] },
-];
+export const WHITE_LIST = ['not-found-page', 'login', 'server-error'];
 
 export const NOT_FOUND = {
   name: 'not-found-page',

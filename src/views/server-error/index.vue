@@ -1,6 +1,7 @@
 <template>
   <div class="content">
-    <a-result class="result" status="404" :subtitle="'找不到页面'"> </a-result>
+    <a-result class="result" status="500" :subtitle="'找不到服务器'">
+    </a-result>
     <div class="operation-row">
       <a-button key="返回" type="primary" @click="back"> back </a-button>
     </div>

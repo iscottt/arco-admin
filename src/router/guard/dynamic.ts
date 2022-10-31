@@ -6,6 +6,7 @@ import type {
 import { useRouteStore } from '@/store';
 import { getToken } from '@/utils/auth';
 import { NOT_FOUND_ROUTE } from '../routes/base';
+import { WHITE_LIST } from '../constants';
 
 /**
  * 动态路由
@@ -45,13 +46,15 @@ export async function createDynamicRouteGuard(
   // }
   if (isLogin) {
     if (to.name === 'login') {
-      next({ name: 'Workplace' });
+      next('/dashboard/workplace');
     } else {
+      if (WHITE_LIST.indexOf(to.name as string) > -1) {
+        next();
+      }
       const hasRoute = router.hasRoute(to.name!);
       if (!route.menus.length) {
         await route.initDynamicRoute(router);
         router.addRoute(NOT_FOUND_ROUTE);
-        console.log('=a-0sd=a-s0d-=as0d=-as0', to.name, hasRoute);
         if (!hasRoute) {
           // 如果该路由不存在，可能是动态注册的路由，它还没准备好，需要再重定向一次到该路由
           next({ ...to, replace: true });

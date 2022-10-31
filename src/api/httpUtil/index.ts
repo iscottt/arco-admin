@@ -1,7 +1,7 @@
 import Axios from 'axios';
 import { Message } from '@arco-design/web-vue';
 import router from '@/router';
-import { removeToken, getToken } from '@/utils/auth';
+import { removeToken, getToken, getUserInfo } from '@/utils/auth';
 
 const BASE_URL = process.env.NODE_ENV === 'production' ? '/qcApi' : '/api';
 class HttpRequest {
@@ -22,7 +22,7 @@ class HttpRequest {
     return queue.length;
   }
   // 请求拦截
-  interceptors(instance: any, url: any) {
+  interceptors(instance: any) {
     // 添加请求拦截器
     instance.interceptors.request.use(
       (config: any) => {
@@ -39,23 +39,23 @@ class HttpRequest {
     instance.interceptors.response.use(
       (res: any) => {
         let { data } = res;
-        const is = this.destroy(url);
-        if (!is) {
-          setTimeout(() => {
-            // Spin.hide()
-          }, 500);
-        }
         if (data.retCode && data.retCode !== '0') {
           if (data.retCode == '-100') {
             removeToken();
             localStorage.clear();
             router.push('/login');
+          } else {
+            Message.error(data.retMessage);
+            return Promise.reject(data.retMessage);
           }
-          return data;
         }
         return data;
       },
       (error: any) => {
+        if (error.message.indexOf('502') > -1) {
+          router.push('/server-error');
+          return Promise.reject(error);
+        }
         Message.error('服务器内部错误');
         // 对响应错误做点什么
         return Promise.reject(error);
@@ -78,7 +78,9 @@ class HttpRequest {
   // 请求实例
   request(options: any) {
     var instance = this.create(options.baseURL);
-    this.interceptors(instance, options.url);
+    const { operatorId } = getUserInfo();
+    Object.assign(options.data || {}, { statusOperatorId: operatorId });
+    this.interceptors(instance);
     // options = Object.assign({}, options)
     // options.data = Qs.stringify(options.data)
     this.queue[options.url] = instance;

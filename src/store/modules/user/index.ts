@@ -10,6 +10,7 @@ import {
   getToken,
   getUserInfo,
   setUserInfo,
+  removeUserInfo,
 } from '@/utils/auth';
 import { removeRouteListener } from '@/utils/route-listener';
 import { UserState } from './types';
@@ -43,6 +44,8 @@ const useUserStore = defineStore('user', {
         toLoginRedirect();
       } catch (err) {
         removeToken();
+        removeUserInfo();
+        return Promise.reject(err);
       }
     },
     logoutCallBack() {

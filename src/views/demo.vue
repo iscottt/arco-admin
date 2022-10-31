@@ -1,5 +1,5 @@
 <template>
-  <div class="container">
+  <div class="s-container">
     <Breadcrumb />
     <a-card class="general-card" title="查询表格">
       <a-row>
@@ -132,9 +132,9 @@
       status: '',
     };
   };
+  const formModel = ref(generateFormModel());
   const { loading, setLoading } = useLoading(true);
   const renderData = ref([]);
-  const formModel = ref(generateFormModel());
   const basePagination: Pagination = {
     current: 1,
     pageSize: 20,
@@ -187,7 +187,7 @@
 </script>
 
 <style scoped lang="less">
-  .container {
+  .s-container {
     padding: 0 20px 20px 20px;
   }
   :deep(.arco-table-th) {

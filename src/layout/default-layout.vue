@@ -32,7 +32,12 @@
         >
           <template #title>
             <div class="flex-center">
-              <img src="@/assets/images/logo.png" width="20" class="mr-2" alt="" />
+              <img
+                src="@/assets/images/logo.png"
+                width="20"
+                class="mr-2"
+                alt=""
+              />
               <span>浙江省荣军医院质控平台</span>
             </div>
           </template>
@@ -48,6 +53,21 @@
       </a-layout>
     </a-layout>
   </a-layout>
+  <!-- 重置密码 -->
+  <a-modal
+    v-model:visible="visiblePwd"
+    title="重置密码"
+    @before-ok="beforeReset"
+  >
+    <a-form :model="resetForm" ref="resetRef" :rules="resetRules">
+      <a-form-item field="password" label="新密码">
+        <a-input v-model="resetForm.password" />
+      </a-form-item>
+      <a-form-item field="passwordCfr" label="确认密码">
+        <a-input v-model="resetForm.passwordCfr" />
+      </a-form-item>
+    </a-form>
+  </a-modal>
 </template>
 
 <script lang="ts" setup>
@@ -59,6 +79,9 @@
   import TabBar from '@/components/tab-bar/index.vue';
   import useResponsive from '@/hooks/responsive';
   import PageLayout from './page-layout.vue';
+  import { getUserInfo } from '@/utils/auth';
+  import { resetUserPassword } from '../api/user';
+  import { Message } from '@arco-design/web-vue';
 
   const appStore = useAppStore();
   useResponsive(true);
@@ -67,6 +90,51 @@
   const renderMenu = computed(() => appStore.menu);
   const hideMenu = computed(() => appStore.hideMenu);
   const footer = computed(() => appStore.footer);
+
+  interface ResetFormProps {
+    password?: string;
+    passwordCfr?: string;
+  }
+  const resetForm = ref<ResetFormProps>({});
+  const visiblePwd = ref(false);
+  const resetRef = ref();
+  const operatorId = ref('');
+
+  const resetRules = {
+    password: [{ required: true, message: '密码不能为空' }],
+    passwordCfr: [
+      { required: true, message: '密码不能为空' },
+      {
+        validator: (value, cb) => {
+          if (value !== resetForm.value.password) {
+            cb('两次密码输入不一致');
+          }
+        },
+      },
+    ],
+  };
+
+  const beforeReset = (done) => {
+    resetRef.value.validate(async (errors) => {
+      if (!errors) {
+        console.log('resetForm.value', operatorId.value);
+        const { operatorId: storageOperatorId } = getUserInfo();
+        const params = {
+          password: resetForm.value.password,
+          operatorId: operatorId.value || storageOperatorId,
+        };
+        await resetUserPassword(params);
+        Message.success('操作成功！');
+        done();
+      }
+    });
+  };
+
+  provide('togglePwd', (operId) => {
+    visiblePwd.value = true;
+    operatorId.value = operId;
+  });
+
   const menuWidth = computed(() => {
     return appStore.menuCollapse ? 48 : appStore.menuWidth;
   });
