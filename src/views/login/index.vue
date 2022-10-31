@@ -1,17 +1,9 @@
 <template>
   <div class="container">
-    <div class="logo">
-      <img
-        alt="logo"
-        src="//p3-armor.byteimg.com/tos-cn-i-49unhts6dw/dfdba5317c0c20ce20e64fac803d52bc.svg~tplv-49unhts6dw-image.image"
-      />
-      <div class="logo-text">Arco Design Pro</div>
-    </div>
-
     <div class="content">
-      <div class="content-inner">
+      <a-card class="py-6 px-3 rounded-5px">
         <LoginForm />
-      </div>
+      </a-card>
       <div class="footer">
         <Footer />
       </div>
@@ -28,12 +20,14 @@
 <style lang="less" scoped>
   .container {
     display: flex;
+    width: 100vw;
+    max-width: initial;
     height: 100vh;
-
-    .banner {
-      width: 550px;
-      background: linear-gradient(163.85deg, #1d2129 0%, #00308f 100%);
-    }
+    background-image: url('@/assets/images/login_bg.svg');
+    background-position: 50%;
+    background-size: 100% 100%;
+    background-size: cover;
+    background-color: #f0f2f5;
 
     .content {
       position: relative;
@@ -51,31 +45,6 @@
       width: 100%;
     }
   }
-
-  .logo {
-    position: fixed;
-    top: 24px;
-    left: 22px;
-    z-index: 1;
-    display: inline-flex;
-    align-items: center;
-
-    &-text {
-      margin-right: 4px;
-      margin-left: 4px;
-      color: var(--color-fill-1);
-      font-size: 20px;
-    }
-  }
 </style>
 
-<style lang="less" scoped>
-  // responsive
-  @media (max-width: @screen-lg) {
-    .container {
-      .banner {
-        width: 25%;
-      }
-    }
-  }
-</style>
+<style lang="less" scoped></style>
