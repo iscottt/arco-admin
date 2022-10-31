@@ -1,6 +1,6 @@
 <template>
   <router-view v-slot="{ Component, route }">
-    <transition name="fade" mode="out-in" appear>
+    <transition name="fade-slide" mode="out-in" appear>
       <component
         :is="Component"
         v-if="route.meta.ignoreCache"
@@ -22,4 +22,18 @@
   const cacheList = computed(() => tabBarStore.getCacheList);
 </script>
 
-<style scoped lang="less"></style>
+<style scoped lang="less">
+  /* fade-slide */
+  .fade-slide-leave-active,
+  .fade-slide-enter-active {
+    transition: all 0.3s;
+  }
+  .fade-slide-enter-from {
+    opacity: 0;
+    transform: translateX(-30px);
+  }
+  .fade-slide-leave-to {
+    opacity: 0;
+    transform: translateX(30px);
+  }
+</style>
