@@ -61,7 +61,7 @@
   import { ValidatedError } from '@arco-design/web-vue/es/form/interface';
   import { useStorage } from '@vueuse/core';
   import { useUserStore } from '@/store';
-  import useLoading from '@/hooks/loading';
+  import { useLoading } from '@/hooks';
   import type { LoginData } from '@/api/user';
 
   const { loading, setLoading } = useLoading();

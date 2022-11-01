@@ -48,6 +48,7 @@
     <a-modal
       v-model:visible="visible"
       title="新建&编辑角色"
+      title-align="start"
       @before-ok="handleBeforeOk"
     >
       <div class="modal-container">
@@ -82,7 +83,7 @@
 
 <script lang="ts" setup>
   import { ref, reactive } from 'vue';
-  import useLoading from '@/hooks/loading';
+  import { useLoading } from '@/hooks';
   import { getRolePage, getRoleTree } from '@/api/role';
   import { Pagination } from '@/types/global';
   import { insertRole, updateRole, deleteRole } from '@/api/role';

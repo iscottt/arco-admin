@@ -42,10 +42,13 @@
               :style="{
                 marginRight: '8px',
                 cursor: 'pointer',
-                backgroundColor: '#14C9C9',
               }"
             >
-              <IconUser />
+              <img
+                alt="avatar"
+                class="wh-full"
+                src="https://gw.alipayobjects.com/zos/rmsportal/BiazfanxmamNRoxxVxka.png"
+              />
             </a-avatar>
             <span>{{ userInfo.operatorName }}</span>
           </div>
@@ -73,7 +76,7 @@
   import { computed, inject } from 'vue';
   import { useFullscreen } from '@vueuse/core';
   import { useAppStore } from '@/store';
-  import useUser from '@/hooks/user';
+  import { useUser } from '@/hooks';
   import { useUserStore } from '@/store';
 
   const userStore = useUserStore();

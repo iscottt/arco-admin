@@ -3,7 +3,7 @@ import { Message } from '@arco-design/web-vue';
 
 import { useUserStore } from '@/store';
 
-export default function useUser() {
+export function useUser() {
   const router = useRouter();
   const userStore = useUserStore();
   const logout = async (logoutTo?: string) => {

@@ -2,7 +2,7 @@
   <a-grid :cols="24" :row-gap="16" class="panel">
     <a-grid-item
       class="panel-col"
-      :span="{ xs: 12, sm: 12, md: 12, lg: 12, xl: 12, xxl: 6 }"
+      :span="{ xs: 12, sm: 12, md: 12, lg: 12, xl: 8, xxl: 6 }"
     >
       <a-space>
         <a-avatar :size="54" class="col-avatar">
@@ -25,7 +25,7 @@
     </a-grid-item>
     <a-grid-item
       class="panel-col"
-      :span="{ xs: 12, sm: 12, md: 12, lg: 12, xl: 12, xxl: 6 }"
+      :span="{ xs: 12, sm: 12, md: 12, lg: 12, xl: 8, xxl: 6 }"
     >
       <a-space>
         <a-avatar :size="54" class="col-avatar">
@@ -49,7 +49,7 @@
     </a-grid-item>
     <a-grid-item
       class="panel-col"
-      :span="{ xs: 12, sm: 12, md: 12, lg: 12, xl: 12, xxl: 6 }"
+      :span="{ xs: 12, sm: 12, md: 12, lg: 12, xl: 8, xxl: 6 }"
     >
       <a-space>
         <a-avatar :size="54" class="col-avatar">
@@ -73,7 +73,53 @@
     </a-grid-item>
     <a-grid-item
       class="panel-col"
-      :span="{ xs: 12, sm: 12, md: 12, lg: 12, xl: 12, xxl: 6 }"
+      :span="{ xs: 12, sm: 12, md: 12, lg: 12, xl: 8, xxl: 6 }"
+      style="border-right: none"
+    >
+      <a-space>
+        <a-avatar :size="54" class="col-avatar">
+          <img
+            alt="avatar"
+            src="//p3-armor.byteimg.com/tos-cn-i-49unhts6dw/c8b36e26d2b9bb5dbf9b74dd6d7345af.svg~tplv-49unhts6dw-image.image"
+          />
+        </a-avatar>
+        <a-statistic
+          title="较昨日新增"
+          :value="2.8"
+          :precision="1"
+          :value-from="0"
+          animation
+        >
+          <template #suffix> % <icon-caret-up class="up-icon" /> </template>
+        </a-statistic>
+      </a-space>
+    </a-grid-item>
+    <a-grid-item
+      class="panel-col"
+      :span="{ xs: 12, sm: 12, md: 12, lg: 12, xl: 8, xxl: 6 }"
+      style="border-right: none"
+    >
+      <a-space>
+        <a-avatar :size="54" class="col-avatar">
+          <img
+            alt="avatar"
+            src="//p3-armor.byteimg.com/tos-cn-i-49unhts6dw/c8b36e26d2b9bb5dbf9b74dd6d7345af.svg~tplv-49unhts6dw-image.image"
+          />
+        </a-avatar>
+        <a-statistic
+          title="较昨日新增"
+          :value="2.8"
+          :precision="1"
+          :value-from="0"
+          animation
+        >
+          <template #suffix> % <icon-caret-up class="up-icon" /> </template>
+        </a-statistic>
+      </a-space>
+    </a-grid-item>
+    <a-grid-item
+      class="panel-col"
+      :span="{ xs: 12, sm: 12, md: 12, lg: 12, xl: 8, xxl: 6 }"
       style="border-right: none"
     >
       <a-space>

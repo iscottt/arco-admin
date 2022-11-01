@@ -77,7 +77,7 @@
   import Menu from '@/components/menu/index.vue';
   import Footer from '@/components/footer/index.vue';
   import TabBar from '@/components/tab-bar/index.vue';
-  import useResponsive from '@/hooks/responsive';
+  import { useResponsive } from '@/hooks';
   import PageLayout from './page-layout.vue';
   import { getUserInfo } from '@/utils/auth';
   import { resetUserPassword } from '../api/user';

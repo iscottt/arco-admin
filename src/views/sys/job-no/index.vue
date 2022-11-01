@@ -1,8 +1,8 @@
 <template>
   <div class="s-container">
     <Breadcrumb />
-    <a-card class="general-card">
-      <a-row class="pt-20px">
+    <a-card>
+      <a-row class="pt-4px">
         <a-col :flex="1">
           <a-form
             :model="searchForm"
@@ -84,8 +84,7 @@
           </a-space>
         </a-col>
       </a-row>
-
-      <a-divider class="mb-0" />
+      <a-divider class="my-0" />
       <a-row class="py-16px">
         <a-col :span="16">
           <a-space>
@@ -150,6 +149,7 @@
     <a-modal
       v-model:visible="visible"
       title="新建&编辑角色"
+      title-align="start"
       @before-ok="handleBeforeOk"
     >
       <a-form ref="formRef" :rules="formRules" :model="formModel">
@@ -227,7 +227,7 @@
 
 <script lang="ts" setup>
   import { ref, reactive, inject } from 'vue';
-  import useLoading from '@/hooks/loading';
+  import { useLoading } from '@/hooks';
   import { Pagination } from '@/types/global';
   import { selectRole } from '@/api/role';
   import {
@@ -243,18 +243,19 @@
   import { insertJobNo, deleteJobNo } from '@/api/job-no';
   import { columns } from './columns.jobno';
   import { JobModalProps, JobSearchProps } from './interface';
+  import { useVisible } from '@/hooks';
 
   const formModel = ref<Partial<JobModalProps> & { operatorLevel: number }>({
     operatorLevel: 1,
     blockStatus: 'N',
   });
   const searchForm = ref<Partial<JobSearchProps>>({});
-  const { loading, setLoading } = useLoading(true);
   const renderData = ref([]);
-  const visible = ref(false);
   const formRef = ref();
   const modalType = ref<'add' | 'edit'>('add');
   const roleOptions = ref<any[]>([]);
+  const { loading, setLoading } = useLoading(true);
+  const { visible, toggle } = useVisible();
 
   const levelList = ref([
     {
@@ -277,12 +278,6 @@
   const branchList = ref<any[]>([]);
   const areaList = ref<any[]>([]);
   const deptList = ref<any[]>([]);
-
-  const togglePwd = inject('togglePwd');
-
-  const resetPwd = (operatorId) => {
-    (togglePwd as any)(operatorId);
-  };
   // 初始化分页
   const basePagination: Pagination = {
     current: 1,
@@ -304,6 +299,14 @@
     areaId: { required: true, message: '病区不能为空' },
     deptId: { required: true, message: '科室不能为空' },
   });
+
+  /**
+   * 调用全局的修改密码组件
+   */
+  const togglePwd = inject('togglePwd');
+  const resetPwd = (operatorId) => {
+    (togglePwd as any)(operatorId);
+  };
   /**
    * 重置搜索条件
    */
@@ -325,7 +328,6 @@
       ...searchForm.value,
     });
   };
-
   /**
    * 初始化下拉框数据
    */
@@ -340,12 +342,18 @@
     })) as any;
     branchList.value = filterToSelectOpt(branchRes, 'targetId', 'targetName');
   };
-  initSelectData();
-
+  /**
+   * 选择院区下拉框获取病区列表
+   * @param branchId
+   */
   const branchChange = async (branchId) => {
     const { retData } = (await getAreaList({ branchId })) as any;
     areaList.value = filterToSelectOpt(retData, 'targetId', 'targetName');
   };
+  /**
+   * 选择病区下拉框获取科室列表
+   * @param areaId
+   */
   const areaChange = async (areaId) => {
     const { retData } = (await getDeptList({ areaId })) as any;
     deptList.value = filterToSelectOpt(retData, 'targetId', 'targetName');
@@ -363,7 +371,7 @@
    * 新增角色
    */
   const handleAdd = async () => {
-    visible.value = true;
+    toggle();
     modalType.value = 'add';
     clearForm();
   };
@@ -383,7 +391,7 @@
     await areaChange(filterRes.areaId);
     filterRes.operatorLevel = +filterRes.operatorLevel;
     formModel.value = filterRes;
-    visible.value = true;
+    toggle();
   };
   /**
    * 定义编辑接口需要提交的字段并且进行过滤
@@ -410,7 +418,6 @@
    * 删除角色
    * @param id
    */
-  // @ts-ignore
   const handleDelete = async (operatorId: string) => {
     await deleteJobNo({ seqIds: operatorId.toString() });
     Message.success('操作成功！');
@@ -431,7 +438,7 @@
         } else {
           await updateJobNo(formModel.value);
         }
-        visible.value = false;
+        toggle();
         fetchData({
           startPage: basePagination.current,
           pageSize: basePagination.pageSize,
@@ -468,6 +475,7 @@
   };
 
   fetchData();
+  initSelectData();
 </script>
 
 <script lang="ts">

@@ -40,3 +40,23 @@ export function filterToSelectOpt(curData, valueField, labelField) {
   });
   return result;
 }
+
+/**
+ * 下划线字符串转驼峰
+ * @param name
+ * @returns
+ */
+export function toHump(name) {
+  // @ts-ignore
+  return name.replace(/\_(\w)/g, function (all, letter) {
+    return letter.toUpperCase();
+  });
+}
+/**
+ * 驼峰字符串转下划线
+ * @param name
+ * @returns
+ */
+export function toLine(name) {
+  return name.replace(/([A-Z])/g, '_$1').toLowerCase();
+}

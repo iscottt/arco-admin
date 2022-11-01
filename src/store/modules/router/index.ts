@@ -3,6 +3,7 @@ import { defineStore } from 'pinia';
 import { getUserInfo as fetchUserInfo } from '@/api/user';
 import { getUserInfo } from '@/utils/auth';
 import { getViewComponent } from './component';
+import { RULECONFIG } from '@/router/routes/modules/ruleConfig';
 import { DEFAULT_LAYOUT } from '@/router/routes/base';
 
 interface RouteState {
@@ -30,8 +31,8 @@ export const useRouteStore = defineStore('route-store', {
       if (!operatorId) return;
       const { data } = await fetchUserInfo(operatorId);
       if (data) {
-        const vueRoutes = transformAuthRoutesToVueRoutes(data.funcList);
         this.menus = transformAuthRouteToMenu(data.funcList);
+        const vueRoutes = transformAuthRoutesToVueRoutes(data.funcList);
         vueRoutes.forEach((route) => {
           router.addRoute(route);
         });
@@ -75,6 +76,9 @@ const transformAuthRouteToVueRoute = (item: any) => {
           component: getViewComponent('not-found-page'),
         },
       ];
+    } else if (item.funcUrl === '/control/ruleConfig') {
+      item.children = RULECONFIG;
+      item.children.map((_) => (_.parentId = item.funcId));
     } else {
       const parentPath = `${itemRoute.path}` as AuthRoute.SingleRouteParentPath;
       const parentRoute: any = {

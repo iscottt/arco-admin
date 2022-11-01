@@ -1,8 +1,8 @@
 <template>
   <div class="s-container">
     <Breadcrumb />
-    <a-card class="general-card" title="查询表格">
-      <a-row>
+    <a-card>
+      <a-row class="pt-4px">
         <a-col :flex="1">
           <a-form
             :model="formModel"
@@ -65,8 +65,8 @@
           </a-space>
         </a-col>
       </a-row>
-      <a-divider style="margin-top: 0" />
-      <a-row style="margin-bottom: 16px">
+      <a-divider class="my-0" />
+      <a-row class="py-16px">
         <a-col :span="16">
           <a-space>
             <a-button type="primary">
@@ -118,7 +118,7 @@
 
 <script lang="ts" setup>
   import { ref, reactive, computed } from 'vue';
-  import useLoading from '@/hooks/loading';
+  import { useLoading } from '@/hooks';
   import { getRolePage } from '@/api/role';
   import { Pagination } from '@/types/global';
 
