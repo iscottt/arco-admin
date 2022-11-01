@@ -91,6 +91,7 @@ const transformAuthRouteToVueRoute = (item: any) => {
           locale: item.funcName,
           icon: 'icon-file',
           order: item.sortId,
+          activeMenu: item.activeMenu,
         },
       };
       return [parentRoute];
@@ -113,6 +114,7 @@ const transformAuthRouteToVueRoute = (item: any) => {
     itemRoute.redirect = redirectPath;
   }
   resultRoute.push(itemRoute);
+  console.log('resultRoute', resultRoute);
   return resultRoute;
 };
 

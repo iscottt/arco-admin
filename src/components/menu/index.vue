@@ -70,6 +70,7 @@
           if (isFind) return; // Performance optimization
           backtrack(el, [el.name as string], name);
         });
+        console.log('result', result);
         return result;
       };
       listenerRouteChange((newRoute) => {
@@ -81,7 +82,6 @@
 
           const keySet = new Set([...menuOpenKeys, ...openKeys.value]);
           openKeys.value = [...keySet];
-
           selectedKey.value = [
             activeMenu || menuOpenKeys[menuOpenKeys.length - 1],
           ];

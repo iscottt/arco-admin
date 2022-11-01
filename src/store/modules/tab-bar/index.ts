@@ -7,6 +7,7 @@ import {
 } from '@/router/constants';
 import { isString } from '@/utils/is';
 import { TabBarState, TagProps } from './types';
+import { setLocal, getLocal } from '@/utils/storage';
 
 const formatTag = (route: RouteLocationNormalized): TagProps => {
   const { name, meta, fullPath, query } = route;
@@ -24,7 +25,7 @@ const BAN_LIST = [REDIRECT_ROUTE_NAME];
 const useAppStore = defineStore('tabBar', {
   state: (): TabBarState => ({
     cacheTabList: new Set([DEFAULT_ROUTE_NAME]),
-    tagList: [DEFAULT_ROUTE],
+    tagList: getLocal('tagList') || [DEFAULT_ROUTE],
   }),
 
   getters: {
@@ -40,6 +41,7 @@ const useAppStore = defineStore('tabBar', {
     updateTabList(route: RouteLocationNormalized) {
       if (BAN_LIST.includes(route.name as string)) return;
       this.tagList.push(formatTag(route));
+      setLocal('tagList', this.tagList);
       if (!route.meta.ignoreCache) {
         this.cacheTabList.add(route.name as string);
       }
@@ -47,6 +49,7 @@ const useAppStore = defineStore('tabBar', {
     deleteTag(idx: number, tag: TagProps) {
       this.tagList.splice(idx, 1);
       this.cacheTabList.delete(tag.name);
+      setLocal('tagList', this.tagList);
     },
     addCache(name: string) {
       if (isString(name) && name !== '') this.cacheTabList.add(name);
@@ -62,11 +65,13 @@ const useAppStore = defineStore('tabBar', {
         .filter((el) => !el.ignoreCache)
         .map((el) => el.name)
         .forEach((x) => this.cacheTabList.add(x));
+      setLocal('tagList', this.tagList);
     },
     resetTabList() {
       this.tagList = [DEFAULT_ROUTE];
       this.cacheTabList.clear();
       this.cacheTabList.add(DEFAULT_ROUTE_NAME);
+      setLocal('tagList', this.tagList);
     },
   },
 });
