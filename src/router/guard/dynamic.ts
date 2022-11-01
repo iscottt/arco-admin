@@ -52,7 +52,7 @@ export async function createDynamicRouteGuard(
         next();
       }
       const hasRoute = router.hasRoute(to.name!);
-      if (!route.menus.length) {
+      if (!route.isAddedDynamicRoute) {
         await route.initDynamicRoute(router);
         router.addRoute(NOT_FOUND_ROUTE);
         if (!hasRoute) {

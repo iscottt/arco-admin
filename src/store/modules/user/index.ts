@@ -14,7 +14,6 @@ import {
 } from '@/utils/auth';
 import { removeRouteListener } from '@/utils/route-listener';
 import { UserState } from './types';
-import useAppStore from '../app';
 import { useRouterPush } from '@/composables';
 
 const useUserStore = defineStore('user', {
@@ -26,6 +25,7 @@ const useUserStore = defineStore('user', {
   actions: {
     // Set user's information
     setInfo(userInfo: Auth.UserInfo) {
+      this.userInfo = userInfo;
       setUserInfo(userInfo);
     },
 
@@ -49,11 +49,11 @@ const useUserStore = defineStore('user', {
       }
     },
     logoutCallBack() {
-      const appStore = useAppStore();
+      removeUserInfo();
       this.resetInfo();
       removeToken();
       removeRouteListener();
-      appStore.clearServerMenu();
+      location.reload();
     },
     // Logout
     async logout() {
