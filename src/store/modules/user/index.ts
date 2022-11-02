@@ -1,9 +1,5 @@
 import { defineStore } from 'pinia';
-import {
-  login as userLogin,
-  logout as userLogout,
-  LoginData,
-} from '@/api/user';
+import { login as userLogin, LoginData } from '@/api/user';
 import {
   setToken,
   removeToken,
@@ -57,11 +53,7 @@ const useUserStore = defineStore('user', {
     },
     // Logout
     async logout() {
-      try {
-        await userLogout();
-      } finally {
-        this.logoutCallBack();
-      }
+      this.logoutCallBack();
     },
   },
 });

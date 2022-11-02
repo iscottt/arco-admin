@@ -5,7 +5,6 @@ import globalComponents from '@/components';
 import { setupRouter } from './router';
 import store from './store';
 import directive from './directive';
-import './mock';
 import App from './App.vue';
 import '@arco-design/web-vue/dist/arco.css';
 import '@/assets/style/global.less';

@@ -1,4 +1,3 @@
-import axios from 'axios';
 import { http } from './httpUtil';
 export interface LoginData {
   operatorCode: string;
@@ -15,10 +14,6 @@ export function login(data: LoginData) {
     method: 'POST',
     data,
   });
-}
-// 100017
-export function logout() {
-  return axios.post<LoginRes>('/api/user/logout');
 }
 
 export function getUserInfo(operatorId) {
