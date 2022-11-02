@@ -4,25 +4,45 @@
       <a-col :flex="1">
         <a-form
           :model="searchForm"
-          :label-col-props="{ span: 5 }"
-          :wrapper-col-props="{ span: 19 }"
+          :label-col-props="{ span: 8 }"
+          :wrapper-col-props="{ span: 16 }"
           label-align="left"
         >
           <a-row :gutter="16">
-            <a-col :span="24">
-              <a-form-item label="性别">
+            <a-col :span="8">
+              <a-form-item label="年龄精度">
                 <a-select
-                  class="w-200px"
-                  v-model="searchForm.sexId"
-                  :options="sexOptions"
+                  v-model="searchForm.dayYearFlag"
+                  :options="ageOptions"
                   placeholder="全部"
                 />
               </a-form-item>
             </a-col>
+            <a-col :span="8">
+              <a-form-item label="最小年龄">
+                <a-input-number
+                  v-model="searchForm.minAge"
+                  placeholder="请输入最小年龄"
+                />
+              </a-form-item>
+            </a-col>
+            <a-col :span="8">
+              <a-form-item label="最大年龄">
+                <a-input-number
+                  v-model="searchForm.maxAge"
+                  placeholder="请输入最大年龄"
+                />
+              </a-form-item>
+            </a-col>
             <a-col :span="24">
-              <a-form-item label="不适用项目代码">
+              <a-form-item
+                label="适用项目"
+                :label-col-props="{ span: 3 }"
+                :wrapper-col-props="{ span: 18 }"
+              >
                 <a-select
                   allow-search
+                  class="-ml-14px"
                   v-model="searchForm.chargeCode"
                   placeholder="请选择"
                   @search="handleSearch"
@@ -81,10 +101,10 @@
       @page-change="onPageChange"
       :columns="columns"
     >
-      <template #sexId="{ record }">
-        <a-tag v-if="record.sexId == '1'" color="pinkpurple">男</a-tag>
-        <a-tag v-else-if="record.sexId == '2'" color="green">女</a-tag>
-        <span v-else>---</span>
+      <template #age="{ record }">
+        <a-tag>
+          {{ record.age }}{{ record.dayYearFlag == 'Y' ? '岁' : '天' }}
+        </a-tag>
       </template>
       <template #action="{ record }">
         <a-popconfirm
@@ -112,17 +132,32 @@
       >
         <a-row :gutter="16">
           <a-col :span="24">
-            <a-form-item field="sexId" label="性别">
+            <a-form-item label="年龄精度" field="dayYearFlag">
               <a-select
-                class="w-200px"
-                v-model="formModel.sexId"
-                :options="sexOptions"
+                v-model="formModel.dayYearFlag"
+                :options="ageOptions"
                 placeholder="全部"
               />
             </a-form-item>
           </a-col>
           <a-col :span="24">
-            <a-form-item field="chargeCode" label="不适用项目代码">
+            <a-form-item label="最小年龄" field="minAge">
+              <a-input-number
+                v-model="formModel.minAge"
+                placeholder="请输入最小年龄"
+              />
+            </a-form-item>
+          </a-col>
+          <a-col :span="24">
+            <a-form-item label="最大年龄" field="maxAge">
+              <a-input-number
+                v-model="formModel.maxAge"
+                placeholder="请输入最大年龄"
+              />
+            </a-form-item>
+          </a-col>
+          <a-col :span="24">
+            <a-form-item field="chargeCode" label="适用项目代码">
               <a-select
                 allow-search
                 v-model="formModel.chargeCode"
@@ -146,29 +181,28 @@
   import { ref, reactive } from 'vue';
   import { useLoading } from '@/hooks';
   import {
-    deleteRuleSex,
-    getRuleSexPage,
-    insertRuleSex,
-    searchRuleConfig,
+    deleteRuleAge,
+    getRuleAgePage,
+    insertRuleAge,
   } from '@/api/ruleConfig';
   import { Pagination } from '@/types/global';
-  import { columns } from './column.sex';
-  import { ISexSearch } from './interface';
+  import { columns } from './column.age';
+  import { IAgeSearch } from './interface';
   import { useSearchUnused, useVisible } from '@/hooks';
   import { Message } from '@arco-design/web-vue';
-  import { sexOptions } from '../common';
+  import { ageOptions } from '../common';
 
-  const searchForm = ref<Partial<ISexSearch>>({});
-  const formModel = ref<Partial<ISexSearch>>({
-    sexId: '1',
-  });
+  const searchForm = ref<Partial<IAgeSearch>>({});
+  const formModel = ref<Partial<IAgeSearch>>({});
   const { visible, setVisible } = useVisible();
   const { loading, setLoading } = useLoading(true);
   const renderData = ref([]);
   const formRef = ref();
   const formRules = {
-    sexId: { required: true, message: '性别不能为空' },
-    chargeCode: { required: true, message: '不适用项目不能为空' },
+    dayYearFlag: { required: true, message: '年龄精度不能为空' },
+    maxAge: { required: true, message: '最大年龄不能为空' },
+    minAge: { required: true, message: '最小年龄不能为空' },
+    chargeCode: { required: true, message: '适用项目不能为空' },
   };
   /**
    * 表单提交
@@ -178,7 +212,7 @@
     formRef.value.validate(async (errors) => {
       if (!errors) {
         try {
-          await insertRuleSex({ ...formModel.value, ruleId: 1 });
+          await insertRuleAge({ ...formModel.value, ruleId: 1 });
         } catch (error) {
           return done(false);
         }
@@ -212,7 +246,7 @@
   const fetchData = async (params: any = { startPage: 1, pageSize: 10 }) => {
     setLoading(true);
     try {
-      const data: any = await getRuleSexPage(params);
+      const data: any = await getRuleAgePage(params);
       renderData.value = data.retData;
       pagination.total = data.totalNum;
     } finally {
@@ -233,19 +267,12 @@
    */
   const search = async () => {
     if (JSON.stringify(searchForm.value) == '{}') return;
-    setLoading(true);
-    try {
-      const data: any = await searchRuleConfig({
-        startPage: basePagination.current,
-        pageSize: basePagination.pageSize,
-        ...searchForm.value,
-      });
-      renderData.value = data.retData;
-      pagination.total = data.totalNum;
-      pagination.current = 1;
-    } finally {
-      setLoading(false);
-    }
+    fetchData({
+      startPage: basePagination.current,
+      pageSize: basePagination.pageSize,
+      ...searchForm.value,
+    });
+    pagination.current = 1;
   };
   /**
    * 翻页
@@ -277,7 +304,7 @@
    * @param id
    */
   const handleDelete = async (seqId: string) => {
-    await deleteRuleSex({ seqIds: seqId.toString() });
+    await deleteRuleAge({ seqIds: seqId.toString() });
     Message.success('操作成功！');
     fetchData({
       startPage: basePagination.current,

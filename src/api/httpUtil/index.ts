@@ -46,7 +46,7 @@ class HttpRequest {
             router.push('/login');
           } else {
             Message.error(data.retMessage);
-            return Promise.reject(data.retMessage);
+            throw new Error(data.retMessage);
           }
         }
         return data;

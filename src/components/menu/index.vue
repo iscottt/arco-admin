@@ -70,7 +70,6 @@
           if (isFind) return; // Performance optimization
           backtrack(el, [el.name as string], name);
         });
-        console.log('result', result);
         return result;
       };
       listenerRouteChange((newRoute) => {

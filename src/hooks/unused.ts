@@ -6,6 +6,7 @@ export function useSearchUnused() {
   const setUnusedList = async (name) => {
     const { retData } = (await searchUnusedListByName({ name })) as any;
     unusedList.value = retData;
+    console.log('unusedList.value',unusedList.value)
   };
   return {
     setUnusedList,

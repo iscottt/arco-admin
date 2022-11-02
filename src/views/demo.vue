@@ -141,6 +141,7 @@
   };
   const pagination = reactive({
     ...basePagination,
+    'show-total': true,
   });
 
   const statusOptions = computed(() => [

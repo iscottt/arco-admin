@@ -23,7 +23,7 @@
               <a-form-item label="不适用项目代码">
                 <a-select
                   allow-search
-                  v-model="searchForm.chargeCode"
+                  v-model="searchForm.drugCode"
                   placeholder="请选择"
                   @search="handleSearch"
                   :filter-option="false"
@@ -81,12 +81,19 @@
       @page-change="onPageChange"
       :columns="columns"
     >
+      <template #status="{ record }">
+        <a-tag color="green" v-if="record.status == 'Y'">生效</a-tag>
+        <a-tag v-if="record.status == 'N'">失效</a-tag>
+      </template>
       <template #sexId="{ record }">
         <a-tag v-if="record.sexId == '1'" color="pinkpurple">男</a-tag>
         <a-tag v-else-if="record.sexId == '2'" color="green">女</a-tag>
         <span v-else>---</span>
       </template>
       <template #action="{ record }">
+        <a-button type="text" size="small" @click="handleEdit(record)">
+          编辑
+        </a-button>
         <a-popconfirm
           content="是否确认删除该数据？"
           @ok="handleDelete(record.seqId)"
@@ -114,7 +121,6 @@
           <a-col :span="24">
             <a-form-item field="sexId" label="性别">
               <a-select
-                class="w-200px"
                 v-model="formModel.sexId"
                 :options="sexOptions"
                 placeholder="全部"
@@ -122,10 +128,19 @@
             </a-form-item>
           </a-col>
           <a-col :span="24">
-            <a-form-item field="chargeCode" label="不适用项目代码">
+            <a-form-item field="status" label="状态">
+              <a-select
+                v-model="formModel.status"
+                :options="statusOptions"
+                placeholder="请选择"
+              />
+            </a-form-item>
+          </a-col>
+          <a-col :span="24">
+            <a-form-item field="drugCode" label="不适用项目代码">
               <a-select
                 allow-search
-                v-model="formModel.chargeCode"
+                v-model="formModel.drugCode"
                 placeholder="请选择"
                 @search="handleSearch"
                 :filter-option="false"
@@ -146,29 +161,34 @@
   import { ref, reactive } from 'vue';
   import { useLoading } from '@/hooks';
   import {
-    deleteRuleSex,
-    getRuleSexPage,
-    insertRuleSex,
-    searchRuleConfig,
+    deleteDrugSex,
+    getDrugSexPage,
+    insertDrugSex,
+    updateDrugSex,
   } from '@/api/ruleConfig';
   import { Pagination } from '@/types/global';
   import { columns } from './column.sex';
-  import { ISexSearch } from './interface';
+  import { ISexSearch, IRuleSexEdit } from './interface';
   import { useSearchUnused, useVisible } from '@/hooks';
   import { Message } from '@arco-design/web-vue';
-  import { sexOptions } from '../common';
+  import { sexOptions, statusOptions } from '../common';
+  import { cloneDeep } from 'lodash';
+  import { filterParams } from '@/utils/business';
 
   const searchForm = ref<Partial<ISexSearch>>({});
   const formModel = ref<Partial<ISexSearch>>({
     sexId: '1',
+    status: 'Y',
   });
   const { visible, setVisible } = useVisible();
   const { loading, setLoading } = useLoading(true);
   const renderData = ref([]);
   const formRef = ref();
+  const modalType = ref<'add' | 'edit'>('add');
   const formRules = {
     sexId: { required: true, message: '性别不能为空' },
-    chargeCode: { required: true, message: '不适用项目不能为空' },
+    drugCode: { required: true, message: '不适用项目不能为空' },
+    status: { required: true, message: '状态不能为空' },
   };
   /**
    * 表单提交
@@ -177,8 +197,13 @@
   const handleBeforeOk = async (done) => {
     formRef.value.validate(async (errors) => {
       if (!errors) {
+        const params = { ...formModel.value };
         try {
-          await insertRuleSex({ ...formModel.value, ruleId: 1 });
+          if (modalType.value === 'add') {
+            await insertDrugSex(params);
+          } else {
+            await updateDrugSex(params);
+          }
         } catch (error) {
           return done(false);
         }
@@ -212,7 +237,7 @@
   const fetchData = async (params: any = { startPage: 1, pageSize: 10 }) => {
     setLoading(true);
     try {
-      const data: any = await getRuleSexPage(params);
+      const data: any = await getDrugSexPage(params);
       renderData.value = data.retData;
       pagination.total = data.totalNum;
     } finally {
@@ -223,29 +248,37 @@
    * 新建
    */
   const handleAdd = () => {
+    modalType.value = 'add';
     formModel.value = {};
     formRef.value.clearValidate();
     formRef.value.resetFields();
     setVisible(true);
+  };
+  const handleEdit = async (record) => {
+    modalType.value = 'edit';
+    await setUnusedList(record.srcChargeName);
+    const filterRes = filterfields(cloneDeep(record));
+    formModel.value = filterRes;
+    setVisible(true);
+  };
+  /**
+   * 定义编辑接口需要提交的字段并且进行过滤
+   * @param record
+   */
+  const filterfields = (record) => {
+    const needFields = ['drugCode', 'status', 'sexId', 'seqId'] as const;
+    return filterParams<IRuleSexEdit>(needFields, cloneDeep(record));
   };
   /**
    * 查询
    */
   const search = async () => {
     if (JSON.stringify(searchForm.value) == '{}') return;
-    setLoading(true);
-    try {
-      const data: any = await searchRuleConfig({
-        startPage: basePagination.current,
-        pageSize: basePagination.pageSize,
-        ...searchForm.value,
-      });
-      renderData.value = data.retData;
-      pagination.total = data.totalNum;
-      pagination.current = 1;
-    } finally {
-      setLoading(false);
-    }
+    fetchData({
+      startPage: basePagination.current,
+      pageSize: basePagination.pageSize,
+      ...searchForm.value,
+    });
   };
   /**
    * 翻页
@@ -277,7 +310,7 @@
    * @param id
    */
   const handleDelete = async (seqId: string) => {
-    await deleteRuleSex({ seqIds: seqId.toString() });
+    await deleteDrugSex({ seqIds: seqId.toString() });
     Message.success('操作成功！');
     fetchData({
       startPage: basePagination.current,

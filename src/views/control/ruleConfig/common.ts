@@ -38,3 +38,14 @@ export const sexOptions = [
     value: '2',
   },
 ];
+
+export const ageOptions = [
+  {
+    label: '天数',
+    value: 'D',
+  },
+  {
+    label: '年',
+    value: 'Y',
+  },
+];

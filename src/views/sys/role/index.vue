@@ -91,6 +91,7 @@
   import { Message } from '@arco-design/web-vue';
   import { cloneDeep } from 'lodash';
   import { filterParams } from '@/utils/business';
+  import { useVisible } from '@/hooks/visible';
 
   // 初始化表单
   const generateFormModel = () => {
@@ -103,7 +104,7 @@
   const { loading, setLoading } = useLoading(true);
   const renderData = ref([]);
   const formModel = ref(generateFormModel());
-  const visible = ref(false);
+  const { visible, setVisible } = useVisible();
   const formRef = ref();
   const treeData = ref([]);
   const modalType = ref<'add' | 'edit'>('add');
@@ -120,7 +121,7 @@
    * 新增角色
    */
   const handleAdd = async () => {
-    visible.value = true;
+    setVisible(true);
     modalType.value = 'add';
     clearForm();
     await getTreeData();
@@ -129,13 +130,11 @@
    * 编辑角色
    */
   const handleEdit = async (record) => {
-    visible.value = true;
+    setVisible(true);
     modalType.value = 'edit';
     clearForm();
     await getTreeData();
     const filterRes = filterfields(record);
-    // filterRes.funcIds = filterRes.funcList;
-    // delete filterRes.funcList;
     formModel.value = filterRes;
   };
   /**
@@ -163,7 +162,10 @@
   const handleDelete = async (roleId: string) => {
     await deleteRole({ seqIds: roleId.toString() });
     Message.success('操作成功！');
-    fetchData();
+    fetchData({
+      startPage: basePagination.current,
+      pageSize: basePagination.pageSize,
+    });
   };
   /**
    * 获取树数据
@@ -194,13 +196,20 @@
   const handleBeforeOk = (done) => {
     formRef.value.validate(async (errors) => {
       if (!errors) {
-        if (modalType.value === 'add') {
-          await insertRole(formModel.value);
-        } else {
-          await updateRole(formModel.value);
+        try {
+          if (modalType.value === 'add') {
+            await insertRole(formModel.value);
+          } else {
+            await updateRole(formModel.value);
+          }
+        } catch (error) {
+          return done(false);
         }
-        visible.value = false;
-        fetchData();
+        setVisible(false);
+        fetchData({
+          startPage: basePagination.current,
+          pageSize: basePagination.pageSize,
+        });
         Message.success('操作成功！');
         done();
       }

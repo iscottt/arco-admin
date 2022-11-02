@@ -114,7 +114,6 @@ const transformAuthRouteToVueRoute = (item: any) => {
     itemRoute.redirect = redirectPath;
   }
   resultRoute.push(itemRoute);
-  console.log('resultRoute', resultRoute);
   return resultRoute;
 };
 

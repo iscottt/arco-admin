@@ -9,16 +9,16 @@
           :wrapper-col-props="{ span: 16 }"
         >
           <a-row :gutter="16">
-            <a-col :span="8">
-              <a-form-item label="费用归类">
+            <a-col :span="12">
+              <a-form-item label="限制类型">
                 <a-select
-                  v-model="searchForm.chargeKind"
-                  :options="kindList"
+                  v-model="searchForm.limitType"
+                  :options="limitTypeOptions"
                   placeholder="请选择"
                 />
               </a-form-item>
             </a-col>
-            <a-col :span="8">
+            <a-col :span="12">
               <a-form-item label="状态">
                 <a-select
                   allow-clear
@@ -28,22 +28,34 @@
                 />
               </a-form-item>
             </a-col>
-            <a-col :span="8">
-              <a-form-item label="质控动作">
+            <a-col :span="24">
+              <a-form-item
+                label="收费项目"
+                :label-col-props="{ span: 4 }"
+                :wrapper-col-props="{ span: 18 }"
+              >
                 <a-select
-                  allow-clear
-                  v-model="searchForm.actionType"
-                  :options="actionTypeOptions"
-                  placeholder="全部"
-                />
+                  allow-search
+                  class="-ml-3px"
+                  v-model="searchForm.chargeCode"
+                  placeholder="请选择"
+                  @search="handleSearch"
+                  :filter-option="false"
+                >
+                  <a-option
+                    v-for="item of unusedList"
+                    :value="item.chargeCode"
+                    >{{ item.chargeCode + '-' + item.chargeName }}</a-option
+                  >
+                </a-select>
               </a-form-item>
             </a-col>
           </a-row>
         </a-form>
       </a-col>
-      <a-divider style="height: 42px" direction="vertical" />
-      <a-col :flex="'180px'" style="text-align: right">
-        <a-space :size="18">
+      <a-divider style="height: 84px" direction="vertical" />
+      <a-col :flex="'90px'" style="text-align: right">
+        <a-space :size="18" direction="vertical">
           <a-button type="primary" @click="search">
             <template #icon>
               <icon-search />
@@ -75,7 +87,7 @@
       </a-col>
     </a-row>
     <a-table
-      row-key="seqId"
+      row-key="groupId"
       :loading="loading"
       :pagination="pagination"
       :data="renderData"
@@ -84,18 +96,13 @@
       :columns="columns"
       :scroll="{ x: 800 }"
     >
-      <template #expChargeNames="{ record }">
-        {{ record.expChargeNames || '---' }}
-      </template>
       <template #status="{ record }">
         <a-tag color="green" v-if="record.status == 'Y'">生效</a-tag>
         <a-tag v-if="record.status == 'N'">失效</a-tag>
       </template>
-      <template #actionTypeName="{ record }">
-        <a-tag>{{ record.actionTypeName }}</a-tag>
-      </template>
-      <template #limitTypeName="{ record }">
-        <a-tag>{{ record.limitTypeName }}</a-tag>
+      <template #limitType="{ record }">
+        <a-tag v-if="record.limitType == '1'">当天</a-tag>
+        <a-tag v-else>当次就诊</a-tag>
       </template>
       <template #action="{ record }">
         <a-button type="text" size="small" @click="handleEdit(record)">
@@ -103,10 +110,13 @@
         </a-button>
         <a-popconfirm
           content="是否确认删除该数据？"
-          @ok="handleDelete(record.seqId)"
+          @ok="handleDelete(record.groupId)"
         >
           <a-button type="text" status="danger" size="small"> 删除 </a-button>
         </a-popconfirm>
+        <a-button type="text" size="small" @click="handleDraw(record.groupId)">
+          查看详情
+        </a-button>
       </template>
     </a-table>
     <a-modal
@@ -127,38 +137,11 @@
       >
         <a-row :gutter="16">
           <a-col :span="24">
-            <a-form-item field="chargeKind" label="费用归类">
-              <a-select
-                v-model="formModel.chargeKind"
-                :options="kindList"
-                placeholder="请选择"
-              />
-            </a-form-item>
-          </a-col>
-          <a-col :span="24">
-            <a-form-item field="limitType" label="限制类型">
-              <a-select
-                v-model="formModel.limitType"
-                :options="limitTypeOptions"
-                placeholder="请选择"
-              />
-            </a-form-item>
-          </a-col>
-          <a-col :span="24">
-            <a-form-item field="limitCount" label="限制数量">
-              <a-input-number
-                v-model="formModel.limitCount"
-                placeholder="请输入限制数量"
-              />
-            </a-form-item>
-          </a-col>
-          <a-col :span="24" v-if="formModel.chargeKind">
-            <a-form-item field="expChargeIds" label="例外收费项目">
+            <a-form-item field="srcChargeCode" label="收费项目">
               <a-select
                 allow-search
-                v-model="formModel.expChargeIds"
+                v-model="formModel.srcChargeCode"
                 placeholder="请选择"
-                multiple
                 @search="handleSearch"
                 :filter-option="false"
               >
@@ -172,11 +155,10 @@
             </a-form-item>
           </a-col>
           <a-col :span="24">
-            <a-form-item field="actionType" label="质控动作">
+            <a-form-item field="limitType" label="限制类型">
               <a-select
-                allow-clear
-                v-model="formModel.actionType"
-                :options="actionTypeOptions"
+                v-model="formModel.limitType"
+                :options="limitTypeOptions"
                 placeholder="请选择"
               />
             </a-form-item>
@@ -194,6 +176,17 @@
         </a-row>
       </a-form>
     </a-modal>
+    <!-- 详情 -->
+    <a-drawer
+      width="900px"
+      :visible="visibleDrawer"
+      unmountOnClose
+      @cancel="visibleDrawer = false"
+      @ok="visibleDrawer = false"
+    >
+      <template #title> 查看详情 </template>
+      <GroupDetail :groupId="+groupId" />
+    </a-drawer>
   </div>
 </template>
 
@@ -201,49 +194,35 @@
   import { ref, reactive } from 'vue';
   import { useLoading } from '@/hooks';
   import {
-    deleteKindLimit,
-    getKindLimitPage,
-    insertKindLimit,
-    searchKindLimit,
-    updateKindLimit,
-    getEnums,
+    getGroupPage,
+    insertGroup,
+    updateGroup,
+    deleteGroup,
   } from '@/api/ruleConfig';
   import { Pagination } from '@/types/global';
-  import { columns } from './column.kindLimit';
-  import { IKindLimitSearch, IKindLimitEdit } from './interface';
+  import { columns } from './column.group';
+  import { IGroupSearch, IGroupEdit } from './interface';
   import { useSearchUnused, useVisible } from '@/hooks';
   import { Message } from '@arco-design/web-vue';
   import { cloneDeep } from 'lodash';
-  import { filterParams, filterToSelectOpt } from '@/utils/business';
-  import {
-    limitTypeOptions,
-    statusOptions,
-    actionTypeOptions,
-  } from '../common';
+  import { filterParams } from '@/utils/business';
+  import { limitTypeOptions, statusOptions } from '../common';
+  import GroupDetail from './detail.vue';
 
-  const searchForm = ref<Partial<IKindLimitSearch>>({});
-  const formModel = ref<Partial<IKindLimitEdit>>({});
+  const searchForm = ref<Partial<IGroupSearch>>({});
+  const formModel = ref<Partial<IGroupEdit>>({});
   const { visible, setVisible } = useVisible();
   const { loading, setLoading } = useLoading(true);
   const okLoading = ref<boolean>(false);
   const renderData = ref([]);
   const formRef = ref();
+  const groupId = ref('');
   const modalType = ref<'add' | 'edit'>('add');
-  const kindList = ref<any[]>([]);
+  const visibleDrawer = ref<boolean>(false);
   const formRules = {
     limitType: { required: true, message: '限制类型' },
-    chargeKind: { required: true, message: '费用归类不能为空' },
-    actionType: { required: true, message: '质控动作不能为空' },
+    srcChargeCode: { required: true, message: '收费项目不能为空' },
     status: { required: true, message: '状态不能为空' },
-    limitCount: { required: true, message: '限制数量不能为空' },
-  };
-  /**
-   * 初始化收费大类列表
-   */
-  const getKindLimitList = async () => {
-    const params = { paramCode: 'charge_kind' };
-    const { retData } = (await getEnums(params)) as any;
-    kindList.value = filterToSelectOpt(retData, 'paramValue', 'paramValueName');
   };
   // 初始化分页数据
   const basePagination: Pagination = {
@@ -254,6 +233,12 @@
     ...basePagination,
     'show-total': true,
   });
+
+  const handleDraw = (gid) => {
+    groupId.value = gid;
+    visibleDrawer.value = true;
+  };
+
   /**
    * 表单提交
    * @param done
@@ -264,9 +249,9 @@
         const params = cloneDeep({ ...formModel.value });
         try {
           if (modalType.value === 'add') {
-            await insertKindLimit(params);
+            await insertGroup(params);
           } else {
-            await updateKindLimit(params);
+            await updateGroup(params);
           }
         } catch (error) {
           return done(false);
@@ -294,7 +279,7 @@
   const fetchData = async (params: any = { startPage: 1, pageSize: 10 }) => {
     setLoading(true);
     try {
-      const data: any = await getKindLimitPage(params);
+      const data: any = await getGroupPage(params);
       renderData.value = data.retData;
       pagination.total = data.totalNum;
     } finally {
@@ -306,19 +291,12 @@
    */
   const search = async () => {
     if (JSON.stringify(searchForm.value) === '{}') return;
-    setLoading(true);
-    try {
-      const data: any = await searchKindLimit({
-        startPage: basePagination.current,
-        pageSize: basePagination.pageSize,
-        ...searchForm.value,
-      });
-      renderData.value = data.retData;
-      pagination.total = data.totalNum;
-      pagination.current = 1;
-    } finally {
-      setLoading(false);
-    }
+    fetchData({
+      startPage: basePagination.current,
+      pageSize: basePagination.pageSize,
+      ...searchForm.value,
+    });
+    pagination.current = 1;
   };
   /**
    * 翻页
@@ -360,19 +338,8 @@
    */
   const handleEdit = async (record) => {
     modalType.value = 'edit';
-    const expChargeIds = record.expChargeIds.split(',');
-    const expChargeNames = record.expChargeNames.split(',');
-    const resultArr: any = [];
-    expChargeIds.map((v, i) => {
-      const obj = {
-        chargeCode: v,
-        chargeName: expChargeNames[i],
-      };
-      resultArr.push(obj);
-    });
-    unusedList.value = resultArr;
+    await setUnusedList(record.srcChargeName);
     const filterRes = filterfields(cloneDeep(record));
-    filterRes.expChargeIds = filterRes.expChargeIds.split(',');
     formModel.value = filterRes;
     setVisible(true);
   };
@@ -383,22 +350,19 @@
    */
   const filterfields = (record) => {
     const needFields = [
-      'seqId',
+      'groupId',
       'status',
-      'chargeKind',
-      'actionType',
       'limitType',
-      'expChargeIds',
-      'limitCount',
+      'srcChargeCode',
     ] as const;
-    return filterParams<IKindLimitEdit>(needFields, cloneDeep(record));
+    return filterParams<IGroupEdit>(needFields, cloneDeep(record));
   };
   /**
    * 删除角色
    * @param id
    */
-  const handleDelete = async (seqId: string) => {
-    await deleteKindLimit({ seqIds: seqId.toString() });
+  const handleDelete = async (groupId: string) => {
+    await deleteGroup({ seqIds: groupId.toString() });
     Message.success('操作成功！');
     fetchData({
       startPage: basePagination.current,
@@ -407,7 +371,6 @@
     });
   };
   fetchData();
-  getKindLimitList();
 </script>
 
 <script lang="ts">

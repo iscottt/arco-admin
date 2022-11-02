@@ -32,3 +32,8 @@ export * from './sex';
 export * from './mutex';
 export * from './codeLimit';
 export * from './kindLimit';
+export * from './unitLimit';
+export * from './drugSex';
+export * from './age';
+export * from './exclusive';
+export * from './group';

@@ -107,6 +107,7 @@
   };
   const pagination = reactive({
     ...basePagination,
+    'show-total': true,
   });
   /**
    * 状态list

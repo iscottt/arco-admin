@@ -25,6 +25,7 @@
                 >
                   <a-option
                     v-for="item of unusedList"
+                    v-bind:key="item.chargeCode"
                     :value="item.chargeCode"
                     >{{ item.chargeCode + '-' + item.chargeName }}</a-option
                   >
@@ -93,7 +94,7 @@
       </a-col>
     </a-row>
     <a-table
-      row-key="roleId"
+      row-key="seqId"
       :loading="loading"
       :pagination="pagination"
       :data="renderData"
@@ -151,9 +152,12 @@
                 :filter-option="false"
                 @change="(e) => (formModel.chargeCode = e)"
               >
-                <a-option v-for="item of unusedList" :value="item.chargeCode">{{
-                  item.chargeName
-                }}</a-option>
+                <a-option
+                  v-for="item of unusedList"
+                  v-bind:key="item.chargeCode"
+                  :value="item.chargeCode"
+                  >{{ item.chargeName }}</a-option
+                >
               </a-select>
             </a-form-item>
           </a-col>
@@ -250,6 +254,7 @@
   };
   const pagination = reactive({
     ...basePagination,
+    'show-total': true,
   });
   /**
    * 表单提交
@@ -258,11 +263,15 @@
   const handleBeforeOk = async (done) => {
     formRef.value.validate(async (errors) => {
       if (!errors) {
-        const params = cloneDeep({ ...formModel.value, ruleId: 1 });
-        if (modalType.value === 'add') {
-          await insertCodeLimit(params);
-        } else {
-          await updateCodeLimit(params);
+        const params = cloneDeep({ ...formModel.value });
+        try {
+          if (modalType.value === 'add') {
+            await insertCodeLimit(params);
+          } else {
+            await updateCodeLimit(params);
+          }
+        } catch (error) {
+          return done(false);
         }
         setVisible(false);
         Message.success('操作成功！');
@@ -298,7 +307,7 @@
    * 查询
    */
   const search = async () => {
-    if (JSON.stringify(searchForm.value) == '{}') return;
+    if (JSON.stringify(searchForm.value) === '{}') return;
     setLoading(true);
     try {
       const data: any = await searchCodeLimit({
@@ -341,7 +350,9 @@
    * 新建
    */
   const handleAdd = () => {
+    formModel.value = {};
     formRef.value.clearValidate();
+    formRef.value.resetFields();
     modalType.value = 'add';
     setVisible(true);
   };

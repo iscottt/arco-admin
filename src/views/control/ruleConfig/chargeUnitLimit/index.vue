@@ -10,10 +10,10 @@
         >
           <a-row :gutter="16">
             <a-col :span="8">
-              <a-form-item label="费用归类">
+              <a-form-item label="费用单位">
                 <a-select
-                  v-model="searchForm.chargeKind"
-                  :options="kindList"
+                  v-model="searchForm.chargeUnit"
+                  :options="unitList"
                   placeholder="请选择"
                 />
               </a-form-item>
@@ -87,6 +87,13 @@
       <template #expChargeNames="{ record }">
         {{ record.expChargeNames || '---' }}
       </template>
+      <template #chargeKindName="{ record }">
+        <a-tag v-if="record.chargeKindName">{{ record.chargeKindName }}</a-tag>
+        <span v-else>---</span>
+      </template>
+      <template #chargeUnitName="{ record }">
+        <a-tag>{{ record.chargeUnitName }}</a-tag>
+      </template>
       <template #status="{ record }">
         <a-tag color="green" v-if="record.status == 'Y'">生效</a-tag>
         <a-tag v-if="record.status == 'N'">失效</a-tag>
@@ -127,10 +134,19 @@
       >
         <a-row :gutter="16">
           <a-col :span="24">
-            <a-form-item field="chargeKind" label="费用归类">
+            <a-form-item label="费用归类">
               <a-select
                 v-model="formModel.chargeKind"
                 :options="kindList"
+                placeholder="请选择"
+              />
+            </a-form-item>
+          </a-col>
+          <a-col :span="24">
+            <a-form-item field="chargeUnit" label="费用单位">
+              <a-select
+                v-model="formModel.chargeUnit"
+                :options="unitList"
                 placeholder="请选择"
               />
             </a-form-item>
@@ -165,7 +181,7 @@
                 <a-option
                   v-for="item of unusedList"
                   :value="item.chargeCode"
-                  v-bind:key="item.chargeCode"
+                  :key="item.chargeCode"
                   >{{ item.chargeName }}</a-option
                 >
               </a-select>
@@ -201,16 +217,16 @@
   import { ref, reactive } from 'vue';
   import { useLoading } from '@/hooks';
   import {
-    deleteKindLimit,
-    getKindLimitPage,
-    insertKindLimit,
-    searchKindLimit,
-    updateKindLimit,
+    deleteUnitLimit,
+    getUnitLimitPage,
+    insertUnitLimit,
+    searchUnitLimit,
+    updateUnitLimit,
     getEnums,
   } from '@/api/ruleConfig';
   import { Pagination } from '@/types/global';
-  import { columns } from './column.kindLimit';
-  import { IKindLimitSearch, IKindLimitEdit } from './interface';
+  import { columns } from './column.unitLimit';
+  import { IUnitLimitSearch, IUnitLimitEdit } from './interface';
   import { useSearchUnused, useVisible } from '@/hooks';
   import { Message } from '@arco-design/web-vue';
   import { cloneDeep } from 'lodash';
@@ -221,8 +237,8 @@
     actionTypeOptions,
   } from '../common';
 
-  const searchForm = ref<Partial<IKindLimitSearch>>({});
-  const formModel = ref<Partial<IKindLimitEdit>>({});
+  const searchForm = ref<Partial<IUnitLimitSearch>>({});
+  const formModel = ref<Partial<IUnitLimitEdit>>({});
   const { visible, setVisible } = useVisible();
   const { loading, setLoading } = useLoading(true);
   const okLoading = ref<boolean>(false);
@@ -230,9 +246,10 @@
   const formRef = ref();
   const modalType = ref<'add' | 'edit'>('add');
   const kindList = ref<any[]>([]);
+  const unitList = ref<any[]>([]);
   const formRules = {
     limitType: { required: true, message: '限制类型' },
-    chargeKind: { required: true, message: '费用归类不能为空' },
+    chargeUnit: { required: true, message: '费用单位不能为空' },
     actionType: { required: true, message: '质控动作不能为空' },
     status: { required: true, message: '状态不能为空' },
     limitCount: { required: true, message: '限制数量不能为空' },
@@ -244,6 +261,9 @@
     const params = { paramCode: 'charge_kind' };
     const { retData } = (await getEnums(params)) as any;
     kindList.value = filterToSelectOpt(retData, 'paramValue', 'paramValueName');
+    let data = { paramCode: 'charge_unit' };
+    const { retData: unitRet } = (await getEnums(data)) as any;
+    unitList.value = filterToSelectOpt(unitRet, 'paramValue', 'paramValueName');
   };
   // 初始化分页数据
   const basePagination: Pagination = {
@@ -261,12 +281,27 @@
   const handleBeforeOk = async (done) => {
     formRef.value.validate(async (errors) => {
       if (!errors) {
-        const params = cloneDeep({ ...formModel.value });
         try {
+          const params = cloneDeep(formModel.value);
           if (modalType.value === 'add') {
-            await insertKindLimit(params);
+            const temp: any = [];
+            params.expChargeIds.map((item) => {
+              item = 'seqId@' + item;
+              temp.push(item);
+            });
+            params.expChargeIds = temp;
+            await insertUnitLimit(params);
           } else {
-            await updateKindLimit(params);
+            console.log('params.expChargeIds', params.expChargeIds);
+            const temp: any = [];
+            params.expChargeIds.map((item) => {
+              if (item.indexOf('@') > -1) {
+                item = item.split('@')[1];
+              }
+              temp.push(item);
+            });
+            params.expChargeIds = temp;
+            await updateUnitLimit(params);
           }
         } catch (error) {
           return done(false);
@@ -294,7 +329,7 @@
   const fetchData = async (params: any = { startPage: 1, pageSize: 10 }) => {
     setLoading(true);
     try {
-      const data: any = await getKindLimitPage(params);
+      const data: any = await getUnitLimitPage(params);
       renderData.value = data.retData;
       pagination.total = data.totalNum;
     } finally {
@@ -308,7 +343,7 @@
     if (JSON.stringify(searchForm.value) === '{}') return;
     setLoading(true);
     try {
-      const data: any = await searchKindLimit({
+      const data: any = await searchUnitLimit({
         startPage: basePagination.current,
         pageSize: basePagination.pageSize,
         ...searchForm.value,
@@ -348,9 +383,9 @@
    * 新建
    */
   const handleAdd = () => {
-    formModel.value = {};
     formRef.value.clearValidate();
     formRef.value.resetFields();
+    formModel.value = {};
     modalType.value = 'add';
     setVisible(true);
   };
@@ -360,17 +395,19 @@
    */
   const handleEdit = async (record) => {
     modalType.value = 'edit';
-    const expChargeIds = record.expChargeIds.split(',');
-    const expChargeNames = record.expChargeNames.split(',');
-    const resultArr: any = [];
-    expChargeIds.map((v, i) => {
-      const obj = {
-        chargeCode: v,
-        chargeName: expChargeNames[i],
-      };
-      resultArr.push(obj);
-    });
-    unusedList.value = resultArr;
+    if (record.expChargeNames) {
+      const expChargeIds = record.expChargeIds.split(',');
+      const expChargeNames = record.expChargeNames.split(',');
+      const resultArr: any = [];
+      expChargeIds.map((v, i) => {
+        const obj = {
+          chargeCode: v,
+          chargeName: expChargeNames[i],
+        };
+        resultArr.push(obj);
+      });
+      unusedList.value = resultArr;
+    }
     const filterRes = filterfields(cloneDeep(record));
     filterRes.expChargeIds = filterRes.expChargeIds.split(',');
     formModel.value = filterRes;
@@ -390,15 +427,16 @@
       'limitType',
       'expChargeIds',
       'limitCount',
+      'chargeUnit',
     ] as const;
-    return filterParams<IKindLimitEdit>(needFields, cloneDeep(record));
+    return filterParams<IUnitLimitEdit>(needFields, cloneDeep(record));
   };
   /**
    * 删除角色
    * @param id
    */
   const handleDelete = async (seqId: string) => {
-    await deleteKindLimit({ seqIds: seqId.toString() });
+    await deleteUnitLimit({ seqIds: seqId.toString() });
     Message.success('操作成功！');
     fetchData({
       startPage: basePagination.current,

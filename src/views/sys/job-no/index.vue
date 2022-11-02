@@ -255,7 +255,7 @@
   const modalType = ref<'add' | 'edit'>('add');
   const roleOptions = ref<any[]>([]);
   const { loading, setLoading } = useLoading(true);
-  const { visible, toggle } = useVisible();
+  const { visible, setVisible } = useVisible();
 
   const levelList = ref([
     {
@@ -371,7 +371,7 @@
    * 新增角色
    */
   const handleAdd = async () => {
-    toggle();
+    setVisible(true);
     modalType.value = 'add';
     clearForm();
   };
@@ -391,7 +391,7 @@
     await areaChange(filterRes.areaId);
     filterRes.operatorLevel = +filterRes.operatorLevel;
     formModel.value = filterRes;
-    toggle();
+    setVisible(true);
   };
   /**
    * 定义编辑接口需要提交的字段并且进行过滤
@@ -433,12 +433,16 @@
   const handleBeforeOk = (done) => {
     formRef.value.validate(async (errors) => {
       if (!errors) {
-        if (modalType.value === 'add') {
-          await insertJobNo(formModel.value);
-        } else {
-          await updateJobNo(formModel.value);
+        try {
+          if (modalType.value === 'add') {
+            await insertJobNo(formModel.value);
+          } else {
+            await updateJobNo(formModel.value);
+          }
+        } catch (error) {
+          return done(false);
         }
-        toggle();
+        setVisible(false);
         fetchData({
           startPage: basePagination.current,
           pageSize: basePagination.pageSize,

@@ -221,7 +221,11 @@
       if (!errors) {
         const params = cloneDeep({ ...formModel.value, ruleId: 1 });
         delete params.chargeCodeUnused;
-        await insertRuleMutex(params);
+        try {
+          await insertRuleMutex(params);
+        } catch (error) {
+          return done(false);
+        }
         setVisible(false);
         reset();
         Message.success('操作成功！');
@@ -236,6 +240,7 @@
   };
   const pagination = reactive({
     ...basePagination,
+    'show-total': true,
   });
   /**
    * 状态list
@@ -292,6 +297,7 @@
    * 新建
    */
   const handleAdd = () => {
+    formModel.value = {};
     formRef.value.clearValidate();
     formRef.value.resetFields();
     setVisible(true);
