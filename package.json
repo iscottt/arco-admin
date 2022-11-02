@@ -32,6 +32,7 @@
   "dependencies": {
     "@arco-design/web-vue": "^2.34.1",
     "@better-scroll/core": "^2.5.0",
+    "@commitlint/cli": "^17.2.0",
     "@types/mockjs": "^1.0.4",
     "@vueuse/core": "^7.3.0",
     "arco-design-pro-vue": "^2.5.11",
@@ -52,7 +53,6 @@
     "windicss": "^3.5.6"
   },
   "devDependencies": {
-    "@commitlint/cli": "^11.0.0",
     "@commitlint/config-conventional": "^17.2.0",
     "@types/lodash": "^4.14.177",
     "@types/nprogress": "^0.2.0",
