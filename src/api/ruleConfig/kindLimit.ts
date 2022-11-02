@@ -5,45 +5,45 @@ import { http } from '../httpUtil';
  * @param data
  * @returns
  */
-export function getCodeLimitPage(data) {
+export function getKindLimitPage(data) {
   return http.request({
-    url: '/feeRuleChargeCodeLimit/list',
+    url: '/feeRuleChargeKindLimit/list',
     data,
     method: 'POST',
   });
 }
 /**
- * 新增互斥质控
+ * 新增收费大类质控
  * @param data
  * @returns
  */
-export function insertCodeLimit(data) {
+export function insertKindLimit(data) {
   return http.request({
-    url: '/feeRuleChargeCodeLimit/add',
+    url: '/feeRuleChargeKindLimit/add',
     method: 'POST',
     data,
   });
 }
 /**
- * 编辑互斥质控
+ * 编辑收费大类质控
  * @param data
  * @returns
  */
-export function updateCodeLimit(data) {
+export function updateKindLimit(data) {
   return http.request({
-    url: '/feeRuleChargeCodeLimit/update',
+    url: '/feeRuleChargeKindLimit/update',
     method: 'POST',
     data,
   });
 }
 /**
- * 删除
+ * 删除收费大类质控
  * @param data
  * @returns
  */
-export const deleteCodeLimit = (data) => {
+export const deleteKindLimit = (data) => {
   return http.request({
-    url: '/feeRuleChargeCodeLimit/delete',
+    url: '/feeRuleChargeKindLimit/delete',
     method: 'POST',
     data,
   });
@@ -53,9 +53,9 @@ export const deleteCodeLimit = (data) => {
  * @param data
  * @returns
  */
-export const searchCodeLimit = (data) => {
+export const searchKindLimit = (data) => {
   return http.request({
-    url: '/feeRuleChargeCodeLimit/search',
+    url: '/feeRuleChargeKindLimit/search',
     method: 'POST',
     data,
   });

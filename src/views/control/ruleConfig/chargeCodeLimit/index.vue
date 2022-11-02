@@ -206,7 +206,7 @@
 </template>
 
 <script lang="ts" setup>
-  import { ref, reactive, computed } from 'vue';
+  import { ref, reactive } from 'vue';
   import { useLoading } from '@/hooks';
   import {
     deleteCodeLimit,
@@ -216,11 +216,16 @@
     updateCodeLimit,
   } from '@/api/ruleConfig';
   import { Pagination } from '@/types/global';
-  import { columns } from './column.mutex';
+  import { columns } from './column.codeLimit';
   import { ICodeLimitSearch, ICodeLimitEdit } from './interface';
   import { useSearchUnused, useVisible } from '@/hooks';
   import { Message } from '@arco-design/web-vue';
   import { cloneDeep } from 'lodash';
+  import {
+    limitTypeOptions,
+    statusOptions,
+    actionTypeOptions,
+  } from '../common';
   import { filterParams } from '@/utils/business';
 
   const searchForm = ref<Partial<ICodeLimitSearch>>({});
@@ -238,36 +243,6 @@
     status: { required: true, message: '状态不能为空' },
     limitCount: { required: true, message: '限制数量不能为空' },
   };
-  const statusOptions = computed(() => [
-    {
-      label: '生效',
-      value: 'Y',
-    },
-    {
-      label: '失效',
-      value: 'N',
-    },
-  ]);
-  const actionTypeOptions = computed(() => [
-    {
-      label: '质控',
-      value: '1',
-    },
-    {
-      label: '提醒',
-      value: '2',
-    },
-  ]);
-  const limitTypeOptions = computed(() => [
-    {
-      label: '当天',
-      value: '1',
-    },
-    {
-      label: '当次就诊',
-      value: '2',
-    },
-  ]);
   // 初始化分页数据
   const basePagination: Pagination = {
     current: 1,

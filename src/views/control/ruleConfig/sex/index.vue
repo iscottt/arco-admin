@@ -143,7 +143,7 @@
 </template>
 
 <script lang="ts" setup>
-  import { ref, reactive, computed } from 'vue';
+  import { ref, reactive } from 'vue';
   import { useLoading } from '@/hooks';
   import {
     deleteRuleSex,
@@ -156,6 +156,7 @@
   import { ISexSearch } from './interface';
   import { useSearchUnused, useVisible } from '@/hooks';
   import { Message } from '@arco-design/web-vue';
+  import { sexOptions } from '../common';
 
   const searchForm = ref<Partial<ISexSearch>>({});
   const formModel = ref<Partial<ISexSearch>>({});
@@ -167,16 +168,6 @@
     sexId: { required: true, message: '性别不能为空' },
     chargeCode: { required: true, message: '不适用项目不能为空' },
   };
-  const sexOptions = computed(() => [
-    {
-      label: '男',
-      value: '1',
-    },
-    {
-      label: '女',
-      value: '2',
-    },
-  ]);
   /**
    * 表单提交
    * @param done
