@@ -43,6 +43,7 @@ export const columns: TableColumnData[] = [
     title: '操作',
     slotName: 'action',
     align: 'center',
+    fixed: 'right',
     width: 160,
   },
 ];
