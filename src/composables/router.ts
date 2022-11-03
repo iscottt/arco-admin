@@ -43,7 +43,7 @@ export function useRouterPush(inSetup = true) {
   function toLoginRedirect() {
     const { query, fullPath } = route.value;
     if (query?.redirect) {
-      routerPush(fullPath as string);
+      routerPush({ path: fullPath }, false);
     } else {
       toHome();
     }

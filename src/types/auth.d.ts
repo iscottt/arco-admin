@@ -27,3 +27,12 @@ declare namespace Common {
    */
   type StrategyAction = [boolean, () => void];
 }
+
+declare namespace Http {
+  interface IApiRes<T> {
+    retData: T;
+    retCode: string | number;
+    retMessage: string;
+    totalNum?: number;
+  }
+}

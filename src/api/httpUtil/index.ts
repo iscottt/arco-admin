@@ -2,6 +2,7 @@ import Axios from 'axios';
 import { Message } from '@arco-design/web-vue';
 import router from '@/router';
 import { removeToken, getToken, getUserInfo } from '@/utils/auth';
+import { removeUserInfo } from '../../utils/auth';
 
 const BASE_URL = process.env.NODE_ENV === 'production' ? '/qcApi' : '/api';
 class HttpRequest {
@@ -43,6 +44,9 @@ class HttpRequest {
           if (data.retCode == '-100') {
             removeToken();
             localStorage.clear();
+            removeToken();
+            removeUserInfo()
+            Message.info('登录超时');
             router.push('/login');
           } else {
             Message.error(data.retMessage);
