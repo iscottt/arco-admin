@@ -23,6 +23,14 @@ export const patientStatusList = [
   { value: '1', label: '在院' },
   { value: '2', label: '离院' },
 ];
+export const taskScheduleStatusList = [
+  { value: '1', label: '生效' },
+  { value: '2', label: '失效' },
+];
+export const scheduleTypeList = [
+  { value: '1', label: '每月' },
+  { value: '2', label: '每天' },
+];
 /**
  * 过滤数据
  * @param resourceData
