@@ -1,5 +1,5 @@
 import Axios from 'axios';
-import { Message } from '@arco-design/web-vue';
+import { Message, Notification } from '@arco-design/web-vue';
 import router from '@/router';
 import { removeToken, getToken, getUserInfo } from '@/utils/auth';
 import { removeUserInfo } from '../../utils/auth';
@@ -42,12 +42,23 @@ class HttpRequest {
         let { data } = res;
         if (data.retCode && data.retCode !== '0') {
           if (data.retCode == '-100') {
-            removeToken();
-            localStorage.clear();
-            removeToken();
-            removeUserInfo()
-            Message.info('登录超时');
-            router.push('/login');
+            Notification.warning({
+              id: 'logout',
+              title: '登录超时',
+              content: '2秒后将跳转到登录页面...',
+            });
+            setTimeout(() => {
+              removeToken();
+              localStorage.clear();
+              removeToken();
+              removeUserInfo();
+              Notification.success({
+                id: 'logout',
+                title: '提示',
+                content: '成功退出登录！',
+              });
+              router.push('/login');
+            }, 2000);
           } else {
             Message.error(data.retMessage);
             throw new Error(data.retMessage);
