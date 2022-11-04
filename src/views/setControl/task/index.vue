@@ -313,6 +313,7 @@
 </template>
 
 <script lang="ts" setup>
+  // TODO: 根据账号设置死院区，病区，科室等数据
   import { ref, reactive } from 'vue';
   import { useLoading } from '@/hooks';
   import TaskDetail from './detail.vue';
