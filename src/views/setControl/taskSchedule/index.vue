@@ -240,7 +240,13 @@
           <!-- 科室 -->
           <a-col :span="24" v-if="formModel.targetLevel == 4">
             <a-form-item field="deptId" label="科室">
+              <a-input
+                v-if="userInfo.deptName"
+                :disabled="true"
+                v-model="userInfo.deptName"
+              />
               <a-select
+                v-else
                 v-model="formModel.deptId"
                 :options="deptList"
                 placeholder="请选择"
@@ -352,7 +358,6 @@
   const { loading, setLoading } = useLoading(true);
   const modalType = ref<'add' | 'edit'>('add');
   const userInfo = ref(getUserInfo());
-
   const formRules: Record<string, FieldRule | FieldRule[]> = {
     ruleKindId: { required: true, message: '规则大类不能为空' },
     ruleIds: { required: true, message: '质控项目不能为空' },
@@ -383,11 +388,7 @@
     formModel.value.areaId = undefined;
     formModel.value.deptId = undefined;
     formModel.value.targetId = '';
-    if (
-      (userInfo.value.operatorLevel == '3' ||
-        userInfo.value.operatorLevel == '4') &&
-      userInfo.value.areaId
-    ) {
+    if (userInfo.value.operatorLevel == '3' && userInfo.value.areaId) {
       initDeptList(userInfo.value.areaId);
     }
     if (userInfo.value.operatorLevel == '2' && userInfo.value.branchId) {
@@ -462,14 +463,20 @@
    * 表单提交
    * @param done
    */
-  const handleBeforeOk = async (done) => {
-    formRef.value.validate(async (errors) => {
+  const handleBeforeOk = async () => {
+    console.log('userInfo.value', userInfo.value);
+    formModel.value.branchId =
+      userInfo.value.branchId ?? formModel.value.branchId;
+    formModel.value.areaId = userInfo.value.areaId ?? formModel.value.areaId;
+    formModel.value.deptId = userInfo.value.deptId ?? formModel.value.deptId;
+    await formRef.value.validate(async (errors) => {
       if (!errors) {
         const params = cloneDeep({ ...formModel.value });
+        if (params.targetLevel == '4') {
+          params.targetId = params.deptId;
+        }
         params.ruleIds = params.ruleIds!.join(',');
         params.operatorCode = getUserInfo().operatorId as string;
-        params.branchId = userInfo.value.branchId ?? params.branchId;
-        params.areaId = userInfo.value.areaId ?? params.areaId;
         try {
           if (modalType.value == 'add') {
             await insertTaskSchedule(params);
@@ -477,16 +484,16 @@
             await updateTaskSchedule(params);
           }
         } catch (error) {
-          return done(false);
+          return false;
         }
         setVisible(false);
         Message.success('操作成功！');
         reset();
-        done();
+        return true;
       } else {
-        done(false);
       }
     });
+    return false;
   };
   /**
    * 获取表格数据

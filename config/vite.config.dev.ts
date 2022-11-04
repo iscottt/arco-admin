@@ -12,8 +12,8 @@ export default mergeConfig(
       },
       proxy: {
         '/api': {
-          target: 'http://192.168.102.72/qcApi',
-          // target: 'http://192.168.102.118:9101',
+          // target: 'http://192.168.102.72/qcApi',
+          target: 'http://192.168.102.118:9101',
           // 192.168.102.118
           changeOrigin: true,
           rewrite: (path) => path.replace(/^\/api/, ''),
