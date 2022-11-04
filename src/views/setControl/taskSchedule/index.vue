@@ -77,7 +77,7 @@
         </a-col>
       </a-row>
       <a-table
-        row-key="taskId"
+        row-key="scheduleId"
         :loading="loading"
         :pagination="pagination"
         :data="renderData"
@@ -89,6 +89,10 @@
         <template #createTime="{ record }">
           {{ dayjs(record.createTime).format('YYYY-MM-DD HH:mm:ss') || '---' }}
         </template>
+        <template #scheduleDay="{ record }">
+          {{ record.scheduleDay || '---' }}
+        </template>
+        <!-- scheduleDay -->
         <template #taskStatus="{ record }">
           <a-tag color="#87d068" v-if="record.taskStatus == '1'">生效</a-tag>
           <a-tag color="#f50" v-else-if="record.taskStatus == '2'">失效</a-tag>
@@ -121,7 +125,7 @@
           </a-button>
           <a-popconfirm
             content="是否确认删除该数据？"
-            @ok="handleDelete(record.operatorId)"
+            @ok="handleDelete(record.scheduleId)"
           >
             <a-button type="text" status="danger" size="small"> 删除 </a-button>
           </a-popconfirm>
@@ -181,15 +185,31 @@
               <a-select
                 @change="targetLevelChange"
                 v-model="formModel.targetLevel"
-                :options="targetLevelOpts"
                 placeholder="请选择"
-              />
+              >
+                <template v-for="item of targetLevelOpts" :key="item.value">
+                  <a-option
+                    v-if="userInfo.operatorLevel <= item.value"
+                    :value="item.value"
+                    :label="item.label"
+                  />
+                </template>
+              </a-select>
             </a-form-item>
           </a-col>
-          <!-- 动态展示 -->
-          <a-col :span="24" v-if="formModel.targetLevel > 1">
+          <!-- 院区 -->
+          <a-col
+            :span="24"
+            v-if="formModel.targetLevel > 1 && userInfo.operatorLevel == '2'"
+          >
             <a-form-item field="branchId" label="院区">
+              <a-input
+                v-if="userInfo.branchName"
+                :disabled="true"
+                v-model="userInfo.branchName"
+              />
               <a-select
+                v-else
                 v-model="formModel.branchId"
                 :options="branchList"
                 @change="initAreaList"
@@ -197,9 +217,19 @@
               />
             </a-form-item>
           </a-col>
-          <a-col :span="24" v-if="formModel.targetLevel > 2">
+          <!-- 病区 -->
+          <a-col
+            :span="24"
+            v-if="formModel.targetLevel > 2 && userInfo.operatorLevel == '3'"
+          >
             <a-form-item field="areaId" label="病区">
+              <a-input
+                v-if="userInfo.areaName"
+                :disabled="true"
+                v-model="userInfo.areaName"
+              />
               <a-select
+                v-else
                 v-model="formModel.areaId"
                 :options="areaList"
                 @change="initDeptList"
@@ -207,6 +237,7 @@
               />
             </a-form-item>
           </a-col>
+          <!-- 科室 -->
           <a-col :span="24" v-if="formModel.targetLevel == 4">
             <a-form-item field="deptId" label="科室">
               <a-select
@@ -241,15 +272,17 @@
             </a-form-item>
           </a-col>
           <!-- 定时日期 -->
-          <a-col :span="24">
+          <a-col :span="24" v-if="formModel.scheduleType === '1'">
             <a-form-item field="scheduleDay" label="定时日期">
               <a-input-number
+                :min="1"
+                :max="31"
                 v-model="formModel.scheduleDay"
                 placeholder="请填写1-31之间的数字"
               />
             </a-form-item>
           </a-col>
-          <!-- 定时日期 -->
+          <!-- 定时时间 -->
           <a-col :span="24">
             <a-form-item field="scheduleType" label="选择定时时间">
               <a-time-picker
@@ -278,6 +311,8 @@
     getDeptList,
     searchDoctorList,
     searchPatientList,
+    updateTaskSchedule,
+    deleteTaskSchedule,
   } from '@/api/setControl';
   import { Pagination } from '@/types/global';
   import { columns } from './column.task';
@@ -297,7 +332,7 @@
     scheduleTypeList,
   } from '../common';
   import dayjs from 'dayjs';
-  import { filterToSelectOpt } from '@/utils/business';
+  import { filterParams, filterToSelectOpt } from '@/utils/business';
   import { getTargetIdList } from '@/api/job-no';
   import { useSearchUser } from '../common';
   import { getUserInfo } from '@/utils/auth';
@@ -315,6 +350,8 @@
   const targetList = ref<SelectOptionData[]>([]);
   const { visible, setVisible } = useVisible();
   const { loading, setLoading } = useLoading(true);
+  const modalType = ref<'add' | 'edit'>('add');
+  const userInfo = ref(getUserInfo());
 
   const formRules: Record<string, FieldRule | FieldRule[]> = {
     ruleKindId: { required: true, message: '规则大类不能为空' },
@@ -335,7 +372,9 @@
     ...basePagination,
     'show-total': true,
   });
-
+  /**
+   * 对象层级变化事件
+   */
   const targetLevelChange = () => {
     areaList.value = [];
     deptList.value = [];
@@ -344,6 +383,16 @@
     formModel.value.areaId = undefined;
     formModel.value.deptId = undefined;
     formModel.value.targetId = '';
+    if (
+      (userInfo.value.operatorLevel == '3' ||
+        userInfo.value.operatorLevel == '4') &&
+      userInfo.value.areaId
+    ) {
+      initDeptList(userInfo.value.areaId);
+    }
+    if (userInfo.value.operatorLevel == '2' && userInfo.value.branchId) {
+      initAreaList(userInfo.value.branchId);
+    }
   };
   /**
    * 搜索医生或患者
@@ -417,9 +466,16 @@
     formRef.value.validate(async (errors) => {
       if (!errors) {
         const params = cloneDeep({ ...formModel.value });
+        params.ruleIds = params.ruleIds!.join(',');
         params.operatorCode = getUserInfo().operatorId as string;
+        params.branchId = userInfo.value.branchId ?? params.branchId;
+        params.areaId = userInfo.value.areaId ?? params.areaId;
         try {
-          await insertTaskSchedule(params);
+          if (modalType.value == 'add') {
+            await insertTaskSchedule(params);
+          } else {
+            await updateTaskSchedule(params);
+          }
         } catch (error) {
           return done(false);
         }
@@ -439,9 +495,10 @@
   const fetchData = async (params: any = { startPage: 1, pageSize: 10 }) => {
     setLoading(true);
     try {
-      const { retData, totalNum } = (await getTaskSchedulePage(
-        params
-      )) as unknown as Http.IApiRes<TableData[]>;
+      const { retData, totalNum } = (await getTaskSchedulePage({
+        ...params,
+        operatorCode: userInfo.value.operatorId,
+      })) as unknown as Http.IApiRes<TableData[]>;
       renderData.value = retData;
       pagination.total = totalNum;
     } finally {
@@ -467,11 +524,64 @@
       setLoading(false);
     }
   };
-  const handleDelete = async (id) => {
-    console.log('id', id);
+  /**
+   * 删除
+   * @param scheduleId
+   */
+  const handleDelete = async (scheduleId) => {
+    await deleteTaskSchedule({ seqIds: scheduleId });
+    Message.success('操作成功！');
+    fetchData({
+      startPage: basePagination.current,
+      pageSize: basePagination.pageSize,
+      ...searchForm.value,
+    });
   };
+  /**
+   * 编辑
+   * @param record
+   */
   const handleEdit = async (record) => {
-    console.log('record', record);
+    modalType.value = 'edit';
+    const filterRes = filterfields(record);
+    const temp = record.ruleIds.split(',');
+    const result: number[] = [];
+    temp.map((_) => {
+      result.push(+_);
+    });
+    filterRes.ruleIds = result;
+    filterRes.targetLevel = +filterRes.targetLevel;
+    filterRes.scheduleDay = +filterRes.scheduleDay;
+    formModel.value = filterRes;
+    await getRuleList(filterRes.ruleKindId);
+    record.branchId && (await initAreaList(record.branchId));
+    record.areaId && (await initDeptList(record.areaId));
+    record.targetName && (await handleSearch(record.targetName));
+    setVisible(true);
+  };
+  /**
+   * 定义编辑接口需要提交的字段并且进行过滤
+   * @param record
+   */
+  const filterfields = (record) => {
+    const needFields = [
+      'operatorCode',
+      'operatorId',
+      'ruleIds',
+      'targetId',
+      'scheduleId',
+      'scheduleClock',
+      'targetLevel',
+      'ruleKindId',
+      'patientType',
+      'branchId',
+      'deptId',
+      'areaId',
+      'scheduleType',
+      'scheduleDay',
+    ] as const;
+    type taskEditProps = Record<typeof needFields[number], any>;
+    return filterParams<taskEditProps>(needFields, cloneDeep(record));
   };
   /**
    * 翻页

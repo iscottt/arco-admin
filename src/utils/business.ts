@@ -8,7 +8,10 @@
 export function filterParams<T>(paramsList, curParams, replaceFields?) {
   const result: T = {} as T;
   paramsList.map((key) => {
-    if (Object.prototype.hasOwnProperty.call(curParams, key)) {
+    if (
+      Object.prototype.hasOwnProperty.call(curParams, key) &&
+      curParams[key]
+    ) {
       result[key] = curParams[key];
     }
   });

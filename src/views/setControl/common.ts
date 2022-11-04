@@ -37,6 +37,7 @@ export const scheduleTypeList = [
  * @returns
  */
 export function useSearchUser(resourceData) {
+  if (!resourceData) return [];
   const result: any[] = [];
   resourceData.map((item) => {
     const obj = {

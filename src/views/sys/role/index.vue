@@ -67,9 +67,7 @@
               <a-tree
                 v-if="treeData.length > 0"
                 :checkable="true"
-                :blockNode="true"
-                :show-line="true"
-                checkedStrategy="child"
+                v-model:half-checked-keys="halfKeys"
                 v-model:checked-keys="formModel.funcIds"
                 :data="treeData"
               />
@@ -108,6 +106,7 @@
   const formRef = ref();
   const treeData = ref([]);
   const modalType = ref<'add' | 'edit'>('add');
+  const halfKeys = ref([]);
 
   /**
    * 清除表单
@@ -196,11 +195,13 @@
   const handleBeforeOk = (done) => {
     formRef.value.validate(async (errors) => {
       if (!errors) {
+        const params = { ...formModel.value };
+        params.funcIds = [...formModel.value.funcIds, ...halfKeys.value];
         try {
           if (modalType.value === 'add') {
-            await insertRole(formModel.value);
+            await insertRole(params);
           } else {
-            await updateRole(formModel.value);
+            await updateRole(params);
           }
         } catch (error) {
           return done(false);

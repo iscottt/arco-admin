@@ -10,7 +10,7 @@ export interface ITaskEdit {
   targetLevel: any;
   scheduleClock: string;
   ruleKindId: string;
-  ruleIds: string;
+  ruleIds: any;
   taskId: string;
   patientType: string;
   branchId: string;
@@ -20,6 +20,7 @@ export interface ITaskEdit {
   scheduleType: string;
   scheduleDay: number;
   operatorCode: string;
+  scheduleId: string;
 }
 export interface ITaskInfo {
   targetLevel: any;

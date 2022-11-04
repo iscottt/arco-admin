@@ -17,7 +17,7 @@ export const columns: TableColumnData[] = [
   },
   {
     title: '定时日期',
-    dataIndex: 'scheduleDay',
+    slotName: 'scheduleDay',
     width: 120,
   },
   {

@@ -61,10 +61,10 @@
   >
     <a-form :model="resetForm" ref="resetRef" :rules="resetRules">
       <a-form-item field="password" label="新密码">
-        <a-input v-model="resetForm.password" />
+        <a-input type="password" v-model="resetForm.password" />
       </a-form-item>
       <a-form-item field="passwordCfr" label="确认密码">
-        <a-input v-model="resetForm.passwordCfr" />
+        <a-input type="password" v-model="resetForm.passwordCfr" />
       </a-form-item>
     </a-form>
   </a-modal>

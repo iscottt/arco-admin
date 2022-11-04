@@ -41,7 +41,7 @@
           <a-checkbox
             checked="rememberPassword"
             :model-value="loginConfig.rememberPassword"
-            @change="(setRememberPassword as any)"
+            @change="setRememberPassword as any"
           >
             记住密码
           </a-checkbox>
@@ -87,16 +87,20 @@
     if (loading.value) return;
     if (!errors) {
       setLoading(true);
+      const loadingMsg = Message.loading({
+        duration: 0,
+        content: '正在登录...',
+      });
       try {
         await userStore.login(values as LoginData);
+        Message.clear();
         Message.success('登录成功');
         const { rememberPassword } = loginConfig.value;
         const { operatorCode, password } = values;
-        // 实际生产环境需要进行加密存储。
-        // The actual production environment requires encrypted storage.
         loginConfig.value.operatorCode = rememberPassword ? operatorCode : '';
         loginConfig.value.password = rememberPassword ? password : '';
       } finally {
+        loadingMsg.close();
         setLoading(false);
       }
     }

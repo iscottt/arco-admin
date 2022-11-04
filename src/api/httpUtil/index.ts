@@ -48,16 +48,15 @@ class HttpRequest {
               content: '2秒后将跳转到登录页面...',
             });
             setTimeout(() => {
-              removeToken();
               localStorage.clear();
               removeToken();
               removeUserInfo();
+              router.push('/login');
               Notification.success({
                 id: 'logout',
                 title: '提示',
                 content: '成功退出登录！',
               });
-              router.push('/login');
             }, 2000);
           } else {
             Message.error(data.retMessage);
