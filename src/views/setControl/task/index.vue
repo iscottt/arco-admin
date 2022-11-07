@@ -452,7 +452,6 @@
   const { visible, setVisible } = useVisible();
   const { loading, setLoading } = useLoading(true);
   const taskId = ref<number>(0);
-
   const formRules: Record<string, FieldRule | FieldRule[]> = {
     ruleKindId: { required: true, message: '规则大类不能为空' },
     ruleIds: { required: true, message: '质控项目不能为空' },
