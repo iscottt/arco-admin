@@ -31,6 +31,21 @@ export const scheduleTypeList = [
   { value: '1', label: '每月' },
   { value: '2', label: '每天' },
 ];
+// 质控结果
+export const resultTypeList = [
+  { value: '1', label: '有异常' },
+  { value: '2', label: '无异常' },
+];
+// 任务类型
+export const taskTypeList = [
+  { value: '1', label: '定时任务' },
+  { value: '2', label: '手工任务' },
+];
+// 任务类型
+export const dealList = [
+  { value: 'N', label: '未处理' },
+  { value: 'Y', label: '已处理' },
+];
 /**
  * 过滤数据
  * @param resourceData

@@ -40,7 +40,7 @@
               </template>
               查询
             </a-button>
-            <a-tooltip content="刷新将会清除搜索条件">
+            <a-tooltip content="刷新将会清除搜索条件" position="tr">
               <a-button @click="reset">
                 <template #icon>
                   <icon-refresh />
@@ -65,6 +65,7 @@
         <template #status="{ record }">
           <a-popconfirm
             content="是否确认修改状态？"
+            position="tr"
             @ok="switchStatus(record.status == 'Y', record.ruleId)"
           >
             <a-switch class="mx-2" :model-value="record.status == 'Y'">
@@ -186,15 +187,4 @@
   };
 </script>
 
-<style scoped lang="less">
-  .s-container {
-    padding: 0 20px 20px 20px;
-  }
-  :deep(.arco-table-th) {
-    &:last-child {
-      .arco-table-th-item-title {
-        margin-left: 16px;
-      }
-    }
-  }
-</style>
+<style scoped lang="less"></style>

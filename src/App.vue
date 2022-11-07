@@ -11,4 +11,11 @@
   .s-container {
     padding: 0 20px 20px 20px;
   }
+  :deep(.arco-table-th) {
+    &:last-child {
+      .arco-table-th-item-title {
+        margin-left: 16px;
+      }
+    }
+  }
 </style>

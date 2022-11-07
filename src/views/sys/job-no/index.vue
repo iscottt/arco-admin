@@ -73,7 +73,7 @@
               </template>
               查询
             </a-button>
-            <a-tooltip content="刷新将会清除搜索条件">
+            <a-tooltip content="刷新将会清除搜索条件" position="tr">
               <a-button @click="reset">
                 <template #icon>
                   <icon-refresh />
@@ -130,6 +130,7 @@
           </a-button>
           <a-popconfirm
             content="是否确认删除该数据？"
+            position="tr"
             @ok="handleDelete(record.operatorId)"
           >
             <a-button type="text" status="danger" size="small"> 删除 </a-button>

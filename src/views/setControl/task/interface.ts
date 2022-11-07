@@ -4,6 +4,14 @@ export interface ITaskSearch {
   taskStatus: string;
   chargeKind: string;
   targetLevel: string;
+  startTime: string;
+  endTime: string;
+  isSchedule: string;
+  resultType: string;
+  targetId: string;
+  branchId: string;
+  areaId: string;
+  deptId: string;
 }
 
 export interface ITaskEdit {

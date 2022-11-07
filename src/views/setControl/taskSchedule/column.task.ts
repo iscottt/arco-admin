@@ -1,7 +1,7 @@
 import { TableColumnData } from '@arco-design/web-vue';
 export const columns: TableColumnData[] = [
   {
-    title: '质控大类',
+    title: '规则大类',
     dataIndex: 'ruleKindName',
     width: 150,
   },

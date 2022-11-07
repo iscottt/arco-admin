@@ -63,6 +63,9 @@ class HttpRequest {
             throw new Error(data.retMessage);
           }
         }
+        if (res.config.config && res.config.config.responseType === 'blob') {
+          return res;
+        }
         return data;
       },
       (error: any) => {
@@ -77,7 +80,7 @@ class HttpRequest {
     );
   }
   // 创建实例
-  create(baseURL: any) {
+  create(baseURL: any, config) {
     let conf = {
       baseURL: baseURL || BASE_URL,
       // timeout: 2000,
@@ -86,12 +89,13 @@ class HttpRequest {
         'x-rjyb-token': getToken(),
         // 'application / json'
       },
+      ...config,
     };
     return Axios.create(conf);
   }
   // 请求实例
   request(options: any) {
-    var instance = this.create(options.baseURL);
+    var instance = this.create(options.baseURL, options.config);
     const { operatorId } = getUserInfo();
     Object.assign(options.data || {}, { statusOperatorId: operatorId });
     this.interceptors(instance);

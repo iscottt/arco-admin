@@ -91,7 +91,11 @@
         <a-tag color="#87d068" v-else-if="record.actionType == 2">提醒</a-tag>
       </template>
       <template #action="{ record }">
-        <a-popconfirm content="是否确认处理该任务？" @ok="handleDeal(record)">
+        <a-popconfirm
+          content="是否确认处理该任务？"
+          @ok="handleDeal(record)"
+          position="tr"
+        >
           <a-button type="text" size="small"> 处理 </a-button>
         </a-popconfirm>
       </template>

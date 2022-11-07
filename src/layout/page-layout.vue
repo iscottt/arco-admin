@@ -1,5 +1,5 @@
 <template>
-  <router-view v-slot="{ Component, route }">
+  <router-view v-slot="{ Component, route }" class="overflow-y-auto">
     <transition name="fade-slide" mode="out-in" appear>
       <component
         :is="Component"

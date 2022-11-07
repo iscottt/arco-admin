@@ -12,15 +12,6 @@
           >
             <a-row :gutter="16">
               <a-col :span="8">
-                <a-form-item label="规则大类">
-                  <a-select
-                    v-model="searchForm.chargeKind"
-                    :options="kindList"
-                    placeholder="请选择"
-                  />
-                </a-form-item>
-              </a-col>
-              <a-col :span="8">
                 <a-form-item label="对象层级">
                   <a-select
                     allow-clear
@@ -30,6 +21,44 @@
                   />
                 </a-form-item>
               </a-col>
+
+              <!-- 院级账号才有查询权限 -->
+              <template v-if="userInfo.operatorLevel == '1'">
+                <!-- 院区 -->
+                <a-col :span="8">
+                  <a-form-item field="branchId" label="院区">
+                    <a-input
+                      v-if="userInfo.branchName"
+                      :disabled="true"
+                      v-model="userInfo.branchName"
+                    />
+                    <a-select
+                      v-else
+                      v-model="searchForm.branchId"
+                      :options="branchList"
+                      @change="initAreaList"
+                      placeholder="请选择"
+                    />
+                  </a-form-item>
+                </a-col>
+                <!-- 病区 -->
+                <a-col :span="8">
+                  <a-form-item field="areaId" label="病区">
+                    <a-input
+                      v-if="userInfo.areaName"
+                      :disabled="true"
+                      v-model="userInfo.areaName"
+                    />
+                    <a-select
+                      v-else
+                      v-model="searchForm.areaId"
+                      :options="areaList"
+                      @change="initDeptList"
+                      placeholder="请选择"
+                    />
+                  </a-form-item>
+                </a-col>
+              </template>
               <a-col :span="8">
                 <a-form-item label="任务状态">
                   <a-select
@@ -40,19 +69,55 @@
                   />
                 </a-form-item>
               </a-col>
+              <a-col :span="8">
+                <a-form-item label="任务类型">
+                  <a-select
+                    v-model="searchForm.isSchedule"
+                    :options="taskTypeList"
+                    placeholder="请选择"
+                  />
+                </a-form-item>
+              </a-col>
+              <a-col :span="8">
+                <a-form-item label="质控结果">
+                  <a-select
+                    v-model="searchForm.resultType"
+                    :options="resultTypeList"
+                    placeholder="请选择"
+                  />
+                </a-form-item>
+              </a-col>
+              <a-col :span="8">
+                <a-form-item label="开始日期">
+                  <a-date-picker
+                    class="w-full"
+                    v-model="searchForm.startTime"
+                    placeholder="请选择"
+                  />
+                </a-form-item>
+              </a-col>
+              <a-col :span="8">
+                <a-form-item label="结束日期">
+                  <a-date-picker
+                    class="w-full"
+                    v-model="searchForm.endTime"
+                    placeholder="请选择"
+                  />
+                </a-form-item>
+              </a-col>
             </a-row>
           </a-form>
         </a-col>
-        <a-divider style="height: 42px" direction="vertical" />
-        <a-col :flex="'180px'" style="text-align: right">
-          <a-space :size="18">
+        <a-divider style="height: 134px" direction="vertical" />
+        <a-col :flex="'90px'" style="text-align: right">
+          <a-space :size="18" direction="vertical">
             <a-button type="primary" @click="search">
               <template #icon>
                 <icon-search />
               </template>
               查询
             </a-button>
-            <a-tooltip content="刷新将会清除搜索条件">
+            <a-tooltip content="刷新将会清除搜索条件" position="tr">
               <a-button @click="reset">
                 <template #icon>
                   <icon-refresh />
@@ -84,7 +149,7 @@
         :bordered="false"
         @page-change="onPageChange"
         :columns="columns"
-        :scroll="{ x: 800 }"
+        :scroll="{ x: 800, y: 330 }"
       >
         <template #createTime="{ record }">
           {{ dayjs(record.createTime).format('YYYY-MM-DD HH:mm:ss') || '---' }}
@@ -120,9 +185,7 @@
           >
         </template>
         <template #isSchedule="{ record }">
-          <a-tag color="#f50" v-if="record.isSchedule == '1'"
-            >定时任务添加</a-tag
-          >
+          <a-tag color="#f50" v-if="record.isSchedule == '1'">定时任务</a-tag>
           <a-tag color="#87d068" v-else>手工任务</a-tag>
         </template>
         <template #patientStatus="{ record }">
@@ -219,7 +282,7 @@
               />
             </a-form-item>
           </a-col>
-          <!-- 动态展示 -->
+          <!-- 院区 -->
           <a-col :span="24" v-if="formModel.targetLevel > 1">
             <a-form-item field="branchId" label="院区">
               <a-input
@@ -363,6 +426,8 @@
     taskStatusOpts,
     patientStatusList,
     patientTypeList,
+    resultTypeList,
+    taskTypeList,
   } from '../common';
   import dayjs from 'dayjs';
   import { filterToSelectOpt } from '@/utils/business';
@@ -593,15 +658,4 @@
   };
 </script>
 
-<style scoped lang="less">
-  .s-container {
-    padding: 0 20px 20px 20px;
-  }
-  :deep(.arco-table-th) {
-    &:last-child {
-      .arco-table-th-item-title {
-        margin-left: 16px;
-      }
-    }
-  }
-</style>
+<style scoped lang="less"></style>

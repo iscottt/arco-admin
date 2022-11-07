@@ -69,7 +69,7 @@
             </template>
             查询
           </a-button>
-          <a-tooltip content="刷新将会清除搜索条件">
+          <a-tooltip content="刷新将会清除搜索条件" position="tr">
             <a-button @click="reset">
               <template #icon>
                 <icon-refresh />
@@ -402,15 +402,4 @@
   };
 </script>
 
-<style scoped lang="less">
-  .s-container {
-    padding: 0 20px 20px 20px;
-  }
-  :deep(.arco-table-th) {
-    &:last-child {
-      .arco-table-th-item-title {
-        margin-left: 16px;
-      }
-    }
-  }
-</style>
+<style scoped lang="less"></style>

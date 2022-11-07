@@ -52,7 +52,7 @@
               </template>
               查询
             </a-button>
-            <a-tooltip content="刷新将会清除搜索条件">
+            <a-tooltip content="刷新将会清除搜索条件" position="tr">
               <a-button @click="reset">
                 <template #icon>
                   <icon-refresh />
@@ -84,7 +84,7 @@
         :bordered="false"
         @page-change="onPageChange"
         :columns="columns"
-        :scroll="{ x: 800 }"
+        :scroll="{ x: 800, y: 330 }"
       >
         <template #createTime="{ record }">
           {{ dayjs(record.createTime).format('YYYY-MM-DD HH:mm:ss') || '---' }}
@@ -125,6 +125,7 @@
           </a-button>
           <a-popconfirm
             content="是否确认删除该数据？"
+            position="tr"
             @ok="handleDelete(record.scheduleId)"
           >
             <a-button type="text" status="danger" size="small"> 删除 </a-button>
@@ -630,15 +631,4 @@
   };
 </script>
 
-<style scoped lang="less">
-  .s-container {
-    padding: 0 20px 20px 20px;
-  }
-  :deep(.arco-table-th) {
-    &:last-child {
-      .arco-table-th-item-title {
-        margin-left: 16px;
-      }
-    }
-  }
-</style>
+<style scoped lang="less"></style>
