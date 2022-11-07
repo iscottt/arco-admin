@@ -72,7 +72,7 @@
               <a-col :span="8">
                 <a-form-item label="任务类型">
                   <a-select
-                    v-model="searchForm.isSchedule"
+                    v-model="searchForm.taskType"
                     :options="taskTypeList"
                     placeholder="请选择"
                   />

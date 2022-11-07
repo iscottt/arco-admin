@@ -6,7 +6,7 @@ export interface ITaskSearch {
   targetLevel: string;
   startTime: string;
   endTime: string;
-  isSchedule: string;
+  taskType: string;
   resultType: string;
   targetId: string;
   branchId: string;
