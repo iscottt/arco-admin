@@ -216,22 +216,21 @@
    * 表单提交
    * @param done
    */
-  const handleBeforeOk = async (done) => {
-    formRef.value.validate(async (errors) => {
-      if (!errors) {
-        const params = cloneDeep({ ...formModel.value, ruleId: 1 });
-        delete params.chargeCodeUnused;
-        try {
-          await insertRuleMutex(params);
-        } catch (error) {
-          return done(false);
-        }
-        setVisible(false);
-        reset();
-        Message.success('操作成功！');
-        done();
+  const handleBeforeOk = async () => {
+    const errors = await formRef.value.validate();
+    if (!errors) {
+      const params = cloneDeep({ ...formModel.value, ruleId: 1 });
+      delete params.chargeCodeUnused;
+      try {
+        await insertRuleMutex(params);
+      } catch (error) {
+        return false;
       }
-    });
+      Message.success('操作成功！');
+      return reset();
+    } else {
+      return false;
+    }
   };
   // 初始化分页数据
   const basePagination: Pagination = {

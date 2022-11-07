@@ -278,42 +278,38 @@
    * 表单提交
    * @param done
    */
-  const handleBeforeOk = async (done) => {
-    formRef.value.validate(async (errors) => {
-      if (!errors) {
-        try {
-          const params = cloneDeep(formModel.value);
-          if (modalType.value === 'add') {
-            const temp: any = [];
-            params.expChargeIds.map((item) => {
-              item = 'seqId@' + item;
-              temp.push(item);
-            });
-            params.expChargeIds = temp;
-            await insertUnitLimit(params);
-          } else {
-            console.log('params.expChargeIds', params.expChargeIds);
-            const temp: any = [];
-            params.expChargeIds.map((item) => {
-              if (item.indexOf('@') > -1) {
-                item = item.split('@')[1];
-              }
-              temp.push(item);
-            });
-            params.expChargeIds = temp;
-            await updateUnitLimit(params);
-          }
-        } catch (error) {
-          return done(false);
+  const handleBeforeOk = async () => {
+    const errors = await formRef.value.validate();
+    if (!errors) {
+      try {
+        const params = cloneDeep(formModel.value);
+        if (modalType.value === 'add') {
+          const temp: any = [];
+          params.expChargeIds.map((item) => {
+            item = 'seqId@' + item;
+            temp.push(item);
+          });
+          params.expChargeIds = temp;
+          await insertUnitLimit(params);
+        } else {
+          const temp: any = [];
+          params.expChargeIds.map((item) => {
+            if (item.indexOf('@') > -1) {
+              item = item.split('@')[1];
+            }
+            temp.push(item);
+          });
+          params.expChargeIds = temp;
+          await updateUnitLimit(params);
         }
-        setVisible(false);
-        Message.success('操作成功！');
-        reset();
-        done();
-      } else {
-        done(false);
+      } catch (error) {
+        return false;
       }
-    });
+      Message.success('操作成功！');
+      return reset();
+    } else {
+      return false;
+    }
   };
   /**
    * 状态list

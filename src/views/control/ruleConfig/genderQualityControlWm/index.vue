@@ -194,25 +194,24 @@
    * 表单提交
    * @param done
    */
-  const handleBeforeOk = async (done) => {
-    formRef.value.validate(async (errors) => {
-      if (!errors) {
-        const params = { ...formModel.value };
-        try {
-          if (modalType.value === 'add') {
-            await insertDrugSex(params);
-          } else {
-            await updateDrugSex(params);
-          }
-        } catch (error) {
-          return done(false);
+  const handleBeforeOk = async () => {
+    const errors = await formRef.value.validate();
+    if (!errors) {
+      const params = { ...formModel.value };
+      try {
+        if (modalType.value === 'add') {
+          await insertDrugSex(params);
+        } else {
+          await updateDrugSex(params);
         }
-        setVisible(false);
-        reset();
-        Message.success('操作成功！');
-        done();
+      } catch (error) {
+        return false;
       }
-    });
+      Message.success('操作成功！');
+      return reset();
+    } else {
+      return false;
+    }
   };
   // 初始化分页数据
   const basePagination: Pagination = {

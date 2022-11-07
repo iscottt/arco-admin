@@ -222,7 +222,13 @@
           <!-- 动态展示 -->
           <a-col :span="24" v-if="formModel.targetLevel > 1">
             <a-form-item field="branchId" label="院区">
+              <a-input
+                v-if="userInfo.branchName"
+                :disabled="true"
+                v-model="userInfo.branchName"
+              />
               <a-select
+                v-else
                 v-model="formModel.branchId"
                 :options="branchList"
                 @change="initAreaList"
@@ -230,9 +236,16 @@
               />
             </a-form-item>
           </a-col>
+          <!-- 病区 -->
           <a-col :span="24" v-if="formModel.targetLevel > 2">
             <a-form-item field="areaId" label="病区">
+              <a-input
+                v-if="userInfo.areaName"
+                :disabled="true"
+                v-model="userInfo.areaName"
+              />
               <a-select
+                v-else
                 v-model="formModel.areaId"
                 :options="areaList"
                 @change="initDeptList"
@@ -240,9 +253,16 @@
               />
             </a-form-item>
           </a-col>
+          <!-- 科室 -->
           <a-col :span="24" v-if="formModel.targetLevel == 4">
             <a-form-item field="deptId" label="科室">
+              <a-input
+                v-if="userInfo.deptName"
+                :disabled="true"
+                v-model="userInfo.deptName"
+              />
               <a-select
+                v-else
                 v-model="formModel.deptId"
                 :options="deptList"
                 placeholder="请选择"
@@ -313,7 +333,6 @@
 </template>
 
 <script lang="ts" setup>
-  // TODO: 根据账号设置死院区，病区，科室等数据
   import { ref, reactive } from 'vue';
   import { useLoading } from '@/hooks';
   import TaskDetail from './detail.vue';
@@ -351,6 +370,7 @@
   import { useSearchUser } from '../common';
   import { getUserInfo } from '@/utils/auth';
 
+  const userInfo = ref(getUserInfo());
   const searchForm = ref<Partial<ITaskSearch>>({});
   const formModel = ref<Partial<ITaskEdit>>({});
   const formRef = ref();
@@ -466,24 +486,26 @@
    * 表单提交
    * @param done
    */
-  const handleBeforeOk = async (done) => {
-    formRef.value.validate(async (errors) => {
-      if (!errors) {
-        const params = cloneDeep({ ...formModel.value });
-        params.operatorCode = getUserInfo().operatorId as string;
-        try {
-          await insertTask(params);
-        } catch (error) {
-          return done(false);
-        }
-        setVisible(false);
-        Message.success('操作成功！');
-        reset();
-        done();
-      } else {
-        done(false);
+  const handleBeforeOk = async () => {
+    formModel.value.branchId =
+      userInfo.value.branchId ?? formModel.value.branchId;
+    formModel.value.areaId = userInfo.value.areaId ?? formModel.value.areaId;
+    formModel.value.deptId = userInfo.value.deptId ?? formModel.value.deptId;
+    const errors = await formRef.value.validate();
+    if (!errors) {
+      const params = cloneDeep({ ...formModel.value });
+      params.targetLevel == '4' && (params.targetId = params.deptId);
+      params.operatorCode = userInfo.value.operatorId as string;
+      try {
+        await insertTask(params);
+      } catch (error) {
+        return false;
       }
-    });
+      Message.success('操作成功！');
+      return reset();
+    } else {
+      return false;
+    }
   };
   /**
    * 获取表格数据

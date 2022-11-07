@@ -464,36 +464,30 @@
    * @param done
    */
   const handleBeforeOk = async () => {
-    console.log('userInfo.value', userInfo.value);
     formModel.value.branchId =
       userInfo.value.branchId ?? formModel.value.branchId;
     formModel.value.areaId = userInfo.value.areaId ?? formModel.value.areaId;
     formModel.value.deptId = userInfo.value.deptId ?? formModel.value.deptId;
-    await formRef.value.validate(async (errors) => {
-      if (!errors) {
-        const params = cloneDeep({ ...formModel.value });
-        if (params.targetLevel == '4') {
-          params.targetId = params.deptId;
+    const errors = await formRef.value.validate();
+    if (!errors) {
+      const params = cloneDeep({ ...formModel.value });
+      params.targetLevel == '4' && (params.targetId = params.deptId);
+      params.ruleIds = params.ruleIds!.join(',');
+      params.operatorCode = userInfo.value.operatorId as string;
+      try {
+        if (modalType.value == 'add') {
+          await insertTaskSchedule(params);
+        } else {
+          await updateTaskSchedule(params);
         }
-        params.ruleIds = params.ruleIds!.join(',');
-        params.operatorCode = getUserInfo().operatorId as string;
-        try {
-          if (modalType.value == 'add') {
-            await insertTaskSchedule(params);
-          } else {
-            await updateTaskSchedule(params);
-          }
-        } catch (error) {
-          return false;
-        }
-        setVisible(false);
-        Message.success('操作成功！');
-        reset();
-        return true;
-      } else {
+      } catch (error) {
+        return false;
       }
-    });
-    return false;
+      Message.success('操作成功！');
+      return reset();
+    } else {
+      return false;
+    }
   };
   /**
    * 获取表格数据

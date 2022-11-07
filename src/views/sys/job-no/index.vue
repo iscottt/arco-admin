@@ -387,8 +387,8 @@
       result.push(item.roleId);
     });
     filterRes.roleList = result;
-    await branchChange(filterRes.branchId);
-    await areaChange(filterRes.areaId);
+    filterRes.branchId && (await branchChange(filterRes.branchId));
+    filterRes.areaId && (await areaChange(filterRes.areaId));
     filterRes.operatorLevel = +filterRes.operatorLevel;
     formModel.value = filterRes;
     setVisible(true);
@@ -430,27 +430,26 @@
   /**
    * 表单提交
    */
-  const handleBeforeOk = (done) => {
-    formRef.value.validate(async (errors) => {
-      if (!errors) {
-        try {
-          if (modalType.value === 'add') {
-            await insertJobNo(formModel.value);
-          } else {
-            await updateJobNo(formModel.value);
-          }
-        } catch (error) {
-          return done(false);
+  const handleBeforeOk = async () => {
+    const errors = await formRef.value.validate();
+    if (!errors) {
+      try {
+        if (modalType.value === 'add') {
+          await insertJobNo(formModel.value);
+        } else {
+          await updateJobNo(formModel.value);
         }
-        setVisible(false);
-        fetchData({
-          startPage: basePagination.current,
-          pageSize: basePagination.pageSize,
-        });
-        Message.success('操作成功！');
-        done();
+      } catch (error) {
+        return false;
       }
-    });
+      Message.success('操作成功！');
+      return fetchData({
+        startPage: basePagination.current,
+        pageSize: basePagination.pageSize,
+      });
+    } else {
+      return false;
+    }
   };
   /**
    * 获取表格数据

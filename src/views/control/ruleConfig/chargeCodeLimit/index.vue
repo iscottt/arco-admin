@@ -260,27 +260,24 @@
    * 表单提交
    * @param done
    */
-  const handleBeforeOk = async (done) => {
-    formRef.value.validate(async (errors) => {
-      if (!errors) {
-        const params = cloneDeep({ ...formModel.value });
-        try {
-          if (modalType.value === 'add') {
-            await insertCodeLimit(params);
-          } else {
-            await updateCodeLimit(params);
-          }
-        } catch (error) {
-          return done(false);
+  const handleBeforeOk = async () => {
+    const errors = await formRef.value.validate();
+    if (!errors) {
+      const params = cloneDeep({ ...formModel.value });
+      try {
+        if (modalType.value === 'add') {
+          await insertCodeLimit(params);
+        } else {
+          await updateCodeLimit(params);
         }
-        setVisible(false);
-        Message.success('操作成功！');
-        reset();
-        done();
-      } else {
-        done(false);
+      } catch (error) {
+        return false;
       }
-    });
+      Message.success('操作成功！');
+      return reset();
+    } else {
+      return false;
+    }
   };
   /**
    * 状态list

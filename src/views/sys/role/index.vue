@@ -192,29 +192,28 @@
   /**
    * 表单提交
    */
-  const handleBeforeOk = (done) => {
-    formRef.value.validate(async (errors) => {
-      if (!errors) {
-        const params = { ...formModel.value };
-        params.funcIds = [...formModel.value.funcIds, ...halfKeys.value];
-        try {
-          if (modalType.value === 'add') {
-            await insertRole(params);
-          } else {
-            await updateRole(params);
-          }
-        } catch (error) {
-          return done(false);
+  const handleBeforeOk = async () => {
+    const errors = formRef.value.validate();
+    if (!errors) {
+      const params = { ...formModel.value };
+      params.funcIds = [...formModel.value.funcIds, ...halfKeys.value];
+      try {
+        if (modalType.value === 'add') {
+          await insertRole(params);
+        } else {
+          await updateRole(params);
         }
-        setVisible(false);
-        fetchData({
-          startPage: basePagination.current,
-          pageSize: basePagination.pageSize,
-        });
-        Message.success('操作成功！');
-        done();
+      } catch (error) {
+        return false;
       }
-    });
+      Message.success('操作成功！');
+      return fetchData({
+        startPage: basePagination.current,
+        pageSize: basePagination.pageSize,
+      });
+    } else {
+      return false;
+    }
   };
   /**
    * 获取表格数据
