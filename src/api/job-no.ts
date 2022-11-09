@@ -1,4 +1,3 @@
-// 100004
 import { http } from './httpUtil';
 
 /**

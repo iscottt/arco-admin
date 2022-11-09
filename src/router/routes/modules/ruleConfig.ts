@@ -1,4 +1,4 @@
-export const RULECONFIG = [
+export const RULE_CONFIG = [
   {
     funcUrl: '/control/ruleConfig/sex',
     funcName: '项目限性别',

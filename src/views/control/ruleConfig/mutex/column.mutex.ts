@@ -10,7 +10,9 @@ export const columns: TableColumnData[] = [
     dataIndex: 'srcChargeName',
     width: 200,
     ellipsis: true,
-    tooltip: true,
+    tooltip: {
+      position: 'tr',
+    },
   },
   {
     title: '互斥收费编码',
@@ -22,7 +24,9 @@ export const columns: TableColumnData[] = [
     dataIndex: 'mutexChargeName',
     width: 150,
     ellipsis: true,
-    tooltip: true,
+    tooltip: {
+      position: 'tr',
+    },
   },
   {
     title: '限制类型',

@@ -9,7 +9,9 @@ export const columns: TableColumnData[] = [
     title: '收费项目',
     dataIndex: 'chargeName',
     ellipsis: true,
-    tooltip: true,
+    tooltip: {
+      position: 'tr',
+    },
     width: 240,
   },
   {

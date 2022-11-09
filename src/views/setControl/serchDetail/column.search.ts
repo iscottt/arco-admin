@@ -55,7 +55,9 @@ export const columns: TableColumnData[] = [
     title: '异常内容',
     dataIndex: 'qcRemark',
     ellipsis: true,
-    tooltip: true,
+    tooltip: {
+      position: 'tr',
+    },
     width: 250,
   },
   {

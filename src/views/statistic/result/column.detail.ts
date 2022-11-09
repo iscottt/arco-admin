@@ -1,4 +1,5 @@
 import { TableColumnData } from '@arco-design/web-vue';
+
 export const columns: TableColumnData[] = [
   {
     title: '处理状态',
@@ -13,32 +14,27 @@ export const columns: TableColumnData[] = [
   {
     title: '规则大类',
     dataIndex: 'ruleKindName',
-    width: 150,
-  },
-  {
-    title: '科室名称',
-    dataIndex: 'departName',
     width: 120,
   },
   {
-    title: '病案号/患者ID',
+    title: '病案号',
     dataIndex: 'bah',
-    width: 150,
+    width: 120,
   },
   {
-    title: '住院号/门诊号',
+    title: '住院号',
     dataIndex: 'patientNo',
-    width: 150,
+    width: 120,
   },
   {
     title: '患者姓名',
     dataIndex: 'patientName',
-    width: 100,
+    width: 120,
   },
   {
     title: '质控动作',
     slotName: 'actionType',
-    width: 100,
+    width: 120,
   },
   {
     title: '质控结果说明',
@@ -50,10 +46,8 @@ export const columns: TableColumnData[] = [
     width: 200,
   },
   {
-    title: '操作',
-    slotName: 'action',
-    fixed: 'right',
-    align: 'center',
-    width: 90,
+    title: '创建时间',
+    dataIndex: 'createTimeString',
+    width: 180,
   },
 ];

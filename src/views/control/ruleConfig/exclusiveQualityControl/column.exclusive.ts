@@ -4,7 +4,9 @@ export const columns: TableColumnData[] = [
     title: '收费项目',
     dataIndex: 'chargeName',
     ellipsis: true,
-    tooltip: true,
+    tooltip: {
+      position: 'tr',
+    },
     width: 200,
   },
   {
@@ -16,7 +18,9 @@ export const columns: TableColumnData[] = [
     title: '例外的收费项目',
     dataIndex: 'expChargeNames',
     ellipsis: true,
-    tooltip: true,
+    tooltip: {
+      position: 'tr',
+    },
     width: 200,
   },
   {

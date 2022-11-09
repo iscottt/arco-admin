@@ -3,7 +3,7 @@ import { defineStore } from 'pinia';
 import { getUserInfo as fetchUserInfo } from '@/api/user';
 import { getUserInfo } from '@/utils/auth';
 import { getViewComponent } from './component';
-import { RULECONFIG } from '@/router/routes/modules/ruleConfig';
+import { RULE_CONFIG } from '@/router/routes/modules/ruleConfig';
 import { DEFAULT_LAYOUT } from '@/router/routes/base';
 
 interface RouteState {
@@ -77,7 +77,7 @@ const transformAuthRouteToVueRoute = (item: any) => {
         },
       ];
     } else if (item.funcUrl === '/control/ruleConfig') {
-      item.children = RULECONFIG;
+      item.children = RULE_CONFIG;
       item.children.map((_) => (_.parentId = item.funcId));
     } else {
       const parentPath = `${itemRoute.path}` as AuthRoute.SingleRouteParentPath;

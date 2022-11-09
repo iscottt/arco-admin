@@ -4,7 +4,9 @@ export const columns: TableColumnData[] = [
     title: '加收项目编码',
     dataIndex: 'srcChargeName',
     ellipsis: true,
-    tooltip: true,
+    tooltip: {
+      position: 'tr',
+    },
     width: 200,
   },
   {

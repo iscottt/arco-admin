@@ -14,7 +14,9 @@ export const columns: TableColumnData[] = [
     title: '规则说明',
     dataIndex: 'ruleContent',
     ellipsis: true,
-    tooltip: true,
+    tooltip: {
+      position: 'tr',
+    },
     width: 200,
   },
   {

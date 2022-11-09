@@ -25,7 +25,9 @@ export const columns: TableColumnData[] = [
     title: '质控项目',
     dataIndex: 'ruleNames',
     ellipsis: true,
-    tooltip: true,
+    tooltip: {
+      position: 'tr',
+    },
     width: 200,
   },
   {
@@ -77,7 +79,9 @@ export const columns: TableColumnData[] = [
     title: '处理说明',
     dataIndex: 'remark',
     ellipsis: true,
-    tooltip: true,
+    tooltip: {
+      position: 'tr',
+    },
     width: 150,
   },
   {

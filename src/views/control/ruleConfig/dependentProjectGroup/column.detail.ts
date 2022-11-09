@@ -19,7 +19,9 @@ export const detailColumns: TableColumnData[] = [
     title: '依赖收费项目名称',
     dataIndex: 'dependChargeName',
     ellipsis: true,
-    tooltip: true,
+    tooltip: {
+      position: 'tr',
+    },
     width: 200,
   },
   {
