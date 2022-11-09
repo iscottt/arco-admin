@@ -53,5 +53,28 @@ export const RULE_CONFIG = [
     sortId: 9,
     activeMenu: 'control_ruleConfig',
   },
-  //
+  {
+    funcUrl: '/control/ruleConfig/ageDrug',
+    funcName: '药品限年龄质控',
+    sortId: 10,
+    activeMenu: 'control_ruleConfig',
+  },
+  {
+    funcUrl: '/control/ruleConfig/mutexGroup',
+    funcName: '项目分组互斥',
+    sortId: 11,
+    activeMenu: 'control_ruleConfig',
+  },
+  {
+    funcUrl: '/control/ruleConfig/mutexProjectGroup',
+    funcName: '项目与项目组互斥',
+    sortId: 12,
+    activeMenu: 'control_ruleConfig',
+  },
+  {
+    funcUrl: '/control/ruleConfig/dependKindControl',
+    funcName: '项目依赖医保大类',
+    sortId: 13,
+    activeMenu: 'control_ruleConfig',
+  },
 ];

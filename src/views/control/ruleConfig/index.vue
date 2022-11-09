@@ -72,7 +72,6 @@
     } else {
       to = selectedList[0].replace('rule', 'ruleConfig');
     }
-    console.log('target', to);
     routerPush(to, false);
   };
   initTreeData();

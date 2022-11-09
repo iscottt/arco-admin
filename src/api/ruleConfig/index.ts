@@ -37,3 +37,5 @@ export * from './drugSex';
 export * from './age';
 export * from './exclusive';
 export * from './group';
+export * from './ageDrug';
+export * from './mutexGroup';

@@ -15,7 +15,6 @@ async function setViewComponentName(
   name: string
 ) {
   try {
-    console.log('component', asyncComponent());
     const component = await asyncComponent();
     Object.assign(component.default, { name });
     return component;
