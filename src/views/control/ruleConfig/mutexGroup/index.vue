@@ -101,11 +101,7 @@
         >
           <a-button type="text" status="danger" size="small"> 删除 </a-button>
         </a-popconfirm>
-        <a-button
-          type="text"
-          size="small"
-          @click="handleDraw(record.groupId, record.mutexChargeCode)"
-        >
+        <a-button type="text" size="small" @click="handleDraw(record.groupId)">
           查看详情
         </a-button>
       </template>
@@ -216,7 +212,7 @@
     'show-total': true,
   });
 
-  const handleDraw = (gid, chargeCode) => {
+  const handleDraw = (gid) => {
     groupId.value = gid;
     mutexChargeCode.value = visibleDrawer.value = true;
   };
