@@ -1,6 +1,6 @@
 <template>
   <div class="login-form-wrapper">
-    <div class="login-form-title mb-5">浙江省荣军医院质控平台</div>
+    <div class="login-form-title mb-5"> {{ appStore.systemTitle }}</div>
     <a-form
       ref="loginForm"
       :model="userInfo"
@@ -45,7 +45,7 @@
           >
             记住密码
           </a-checkbox>
-          <a-link>忘记密码</a-link>
+          <!--<a-link>忘记密码</a-link>-->
         </div>
         <a-button type="primary" html-type="submit" long :loading="loading">
           登录
@@ -60,17 +60,18 @@
   import { Message } from '@arco-design/web-vue';
   import { ValidatedError } from '@arco-design/web-vue/es/form/interface';
   import { useStorage } from '@vueuse/core';
-  import { useUserStore } from '@/store';
+  import { useAppStore, useUserStore } from '@/store';
   import { useLoading } from '@/hooks';
   import type { LoginData } from '@/api/user';
+  const appStore = useAppStore();
 
   const { loading, setLoading } = useLoading();
   const userStore = useUserStore();
 
   const loginConfig = useStorage('login-config', {
     rememberPassword: true,
-    operatorCode: 'super_admin', // 演示默认值
-    password: 'yunjia@123', // demo default value
+    operatorCode: '',
+    password: '',
   });
   const userInfo = reactive({
     operatorCode: loginConfig.value.operatorCode,

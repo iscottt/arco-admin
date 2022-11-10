@@ -7,7 +7,7 @@
           :style="{ margin: 0, fontSize: '18px' }"
           :heading="5"
         >
-          浙江省荣军医院质控平台
+          {{ appStore.systemTitle }}
         </a-typography-title>
         <icon-menu-fold
           v-if="appStore.device === 'mobile'"

@@ -12,5 +12,6 @@
   "device": "desktop",
   "tabBar": true,
   "menuFromServer": false,
-  "serverMenu": []
+  "serverMenu": [],
+  "systemTitle": "浙江省荣军医院质控平台"
 }

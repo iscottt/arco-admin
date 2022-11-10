@@ -2,7 +2,8 @@
   <a-col class="banner">
     <a-col :span="12">
       <a-typography-title :heading="5" style="margin-top: 0">
-        欢迎 <span class="text-blue-500">{{ userInfo.operatorName }}</span> 登录浙江省荣军医院质控平台
+        欢迎 <span class="text-blue-500">{{ userInfo.operatorName }}</span> 登录
+        {{ appStore.systemTitle }}
       </a-typography-title>
     </a-col>
     <a-divider class="panel-border" />
@@ -11,8 +12,8 @@
 
 <script lang="ts" setup>
   import { computed } from 'vue';
-  import { useUserStore } from '@/store';
-
+  import { useAppStore, useUserStore } from '@/store';
+  const appStore = useAppStore();
   const userStore = useUserStore();
   const userInfo = computed(() => {
     return userStore.userInfo;
