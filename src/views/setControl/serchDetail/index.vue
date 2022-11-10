@@ -155,7 +155,7 @@
   import { Message } from '@arco-design/web-vue';
   import { exportTaskResult } from '../../../api/setControl/result';
   const defaultTime = {
-    startTime: dayjs().subtract(6, 'days').format('YYYY-MM-DD HH:mm:ss'),
+    startTime: dayjs().subtract(1, 'days').format('YYYY-MM-DD HH:mm:ss'),
     endTime: dayjs().format('YYYY-MM-DD HH:mm:ss'),
   };
 

@@ -3,10 +3,10 @@
     <div class="left-side">
       <div class="panel">
         <Banner />
-        <DataPanel />
+        <!-- <DataPanel /> -->
       </div>
     </div>
-    <div class="right-side">
+    <!-- <div class="right-side">
       <a-grid :cols="24" :row-gap="16">
         <a-grid-item :span="24">
           <div class="panel moduler-wrap">
@@ -17,20 +17,20 @@
           <Announcement />
         </a-grid-item>
       </a-grid>
-    </div>
+    </div> -->
   </div>
 </template>
 
 <script lang="ts" setup>
-  import DataPanel from './components/data-panel.vue';
-  import QuickOperation from './components/quick-operation.vue';
-  import Announcement from './components/announcement.vue';
+  // import DataPanel from './components/data-panel.vue';
+  // import QuickOperation from './components/quick-operation.vue';
+  // import Announcement from './components/announcement.vue';
   import Banner from './components/banner.vue';
 </script>
 
 <script lang="ts">
   export default {
-    name: 'Dashboard', // If you want the include property of keep-alive to take effect, you must name the component
+    name: 'Dashboard',
   };
 </script>
 

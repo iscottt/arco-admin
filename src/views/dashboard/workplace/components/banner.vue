@@ -1,8 +1,8 @@
 <template>
   <a-col class="banner">
-    <a-col :span="8">
+    <a-col :span="12">
       <a-typography-title :heading="5" style="margin-top: 0">
-        欢迎 {{ userInfo.operatorName }}
+        欢迎 <span class="text-blue-500">{{ userInfo.operatorName }}</span> 登录浙江省荣军医院质控平台
       </a-typography-title>
     </a-col>
     <a-divider class="panel-border" />

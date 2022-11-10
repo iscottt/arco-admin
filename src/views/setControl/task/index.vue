@@ -25,7 +25,10 @@
               <!-- 院级账号才有查询权限 -->
               <template v-if="userInfo.operatorLevel == '1'">
                 <!-- 院区 -->
-                <a-col :span="8">
+                <a-col
+                  :span="8"
+                  v-if="searchForm.targetLevel && searchForm.targetLevel > 1"
+                >
                   <a-form-item field="branchId" label="院区">
                     <a-input
                       v-if="userInfo.branchName"
@@ -42,7 +45,10 @@
                   </a-form-item>
                 </a-col>
                 <!-- 病区 -->
-                <a-col :span="8">
+                <a-col
+                  :span="8"
+                  v-if="searchForm.targetLevel && searchForm.targetLevel > 2"
+                >
                   <a-form-item field="areaId" label="病区">
                     <a-input
                       v-if="userInfo.areaName"

@@ -4,13 +4,13 @@ export const columns: TableColumnData[] = [
   {
     title: '用户名称',
     dataIndex: 'operatorName',
-    width: 120,
+    width: 150,
   },
 
   {
     title: '登录账号',
     dataIndex: 'operatorCode',
-    width: 120,
+    width: 150,
   },
   {
     title: '电话号码',

@@ -39,3 +39,5 @@ export * from './exclusive';
 export * from './group';
 export * from './ageDrug';
 export * from './mutexGroup';
+export * from './mutexProject';
+export * from './dependKind';

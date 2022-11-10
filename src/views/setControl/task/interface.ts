@@ -3,7 +3,7 @@ import { TableData } from '@arco-design/web-vue';
 export interface ITaskSearch {
   taskStatus: string;
   chargeKind: string;
-  targetLevel: string;
+  targetLevel: number;
   startTime: string;
   endTime: string;
   taskType: string;

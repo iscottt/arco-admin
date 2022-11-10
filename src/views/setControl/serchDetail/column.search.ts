@@ -4,17 +4,20 @@ export const columns: TableColumnData[] = [
   {
     title: '就诊类型',
     slotName: 'patientType',
-    width: 120,
+    width: 90,
+    fixed: 'left',
   },
   {
     title: '病区名称',
     dataIndex: 'areaName',
-    width: 120,
+    width: 90,
+    fixed: 'left',
   },
   {
     title: '科室名称',
     dataIndex: 'departName',
-    width: 120,
+    width: 100,
+    fixed: 'left',
   },
   {
     title: '患者姓名',

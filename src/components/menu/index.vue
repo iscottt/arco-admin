@@ -100,7 +100,7 @@
                 ? () => h(compile(`<${element?.meta?.icon}/>`))
                 : null;
               const node =
-                element?.children && element?.children.length !== 0 ? (
+                element?.children && element?.children.length !== 1 ? (
                   <a-sub-menu
                     key={element?.name}
                     v-slots={{

@@ -28,12 +28,26 @@
                 />
               </a-form-item>
             </a-col>
-            <a-col :span="12">
-              <a-form-item label="组名称">
-                <a-input
-                  v-model="searchForm.groupName"
-                  placeholder="请输入组名称"
-                />
+            <a-col :span="24">
+              <a-form-item
+                label="收费项目"
+                :label-col-props="{ span: 4 }"
+                :wrapper-col-props="{ span: 18 }"
+              >
+                <a-select
+                  allow-search
+                  class="-ml-3px"
+                  v-model="searchForm.chargeCode"
+                  placeholder="请选择"
+                  @search="handleSearch"
+                  :filter-option="false"
+                >
+                  <a-option
+                    v-for="item of unusedList"
+                    :value="item.chargeCode"
+                    >{{ item.chargeCode + '-' + item.chargeName }}</a-option
+                  >
+                </a-select>
               </a-form-item>
             </a-col>
           </a-row>
@@ -124,11 +138,21 @@
       >
         <a-row :gutter="16">
           <a-col :span="24">
-            <a-form-item field="groupName" label="组名称">
-              <a-input
-                v-model="formModel.groupName"
-                placeholder="请输入组名称"
-              />
+            <a-form-item field="chargeCode" label="收费项目">
+              <a-select
+                allow-search
+                v-model="formModel.chargeCode"
+                placeholder="请选择"
+                @search="handleSearch"
+                :filter-option="false"
+              >
+                <a-option
+                  v-for="item of unusedList"
+                  :value="item.chargeCode"
+                  v-bind:key="item.chargeCode"
+                  >{{ item.chargeName }}</a-option
+                >
+              </a-select>
             </a-form-item>
           </a-col>
           <a-col :span="24">
@@ -162,7 +186,7 @@
       @ok="visibleDrawer = false"
     >
       <template #title> 查看详情 </template>
-      <GroupDetail :groupId="+groupId" :mutexChargeCode="mutexChargeCode" />
+      <GroupDetail :groupId="+groupId" />
     </a-drawer>
   </div>
 </template>
@@ -171,15 +195,15 @@
   import { ref, reactive } from 'vue';
   import { useLoading } from '@/hooks';
   import {
-    getRuleMutexGroupPage,
-    insertRuleMutexGroup,
-    updateRuleMutexGroup,
-    deleteRuleMutexGroup,
+    getRuleDependKindPage,
+    insertRuleDependKind,
+    updateRuleDependKind,
+    deleteRuleDependKind,
   } from '@/api/ruleConfig';
   import { Pagination } from '@/types/global';
   import { columns } from './column.group';
   import { IGroupSearch, IGroupEdit } from './interface';
-  import { useVisible } from '@/hooks';
+  import { useSearchUnused, useVisible } from '@/hooks';
   import { Message } from '@arco-design/web-vue';
   import { cloneDeep } from 'lodash';
   import { filterParams } from '@/utils/business';
@@ -194,12 +218,11 @@
   const renderData = ref([]);
   const formRef = ref();
   const groupId = ref('');
-  const mutexChargeCode = ref();
   const modalType = ref<'add' | 'edit'>('add');
   const visibleDrawer = ref<boolean>(false);
   const formRules = {
     limitType: { required: true, message: '限制类型' },
-    groupName: { required: true, message: '组名称不能为空' },
+    chargeCode: { required: true, message: '收费项目不能为空' },
     status: { required: true, message: '状态不能为空' },
   };
   // 初始化分页数据
@@ -212,9 +235,9 @@
     'show-total': true,
   });
 
-  const handleDraw = (gid: string) => {
+  const handleDraw = (gid) => {
     groupId.value = gid;
-    mutexChargeCode.value = visibleDrawer.value = true;
+    visibleDrawer.value = true;
   };
 
   /**
@@ -224,12 +247,12 @@
   const handleBeforeOk = async () => {
     const errors = await formRef.value.validate();
     if (!errors) {
-      const params = cloneDeep({ ...formModel.value, ruleId: 13 });
+      const params = cloneDeep({ ...formModel.value, ruleId: 14 });
       try {
         if (modalType.value === 'add') {
-          await insertRuleMutexGroup(params);
+          await insertRuleDependKind(params);
         } else {
-          await updateRuleMutexGroup(params);
+          await updateRuleDependKind(params);
         }
       } catch (error) {
         return false;
@@ -241,13 +264,20 @@
     }
   };
   /**
+   * 状态list
+   */
+  const { unusedList, setUnusedList } = useSearchUnused();
+  const handleSearch = (name) => {
+    setUnusedList(name);
+  };
+  /**
    * 获取表格数据
    * @param params
    */
   const fetchData = async (params: any = { startPage: 1, pageSize: 10 }) => {
     setLoading(true);
     try {
-      const data: any = await getRuleMutexGroupPage(params);
+      const data: any = await getRuleDependKindPage(params);
       renderData.value = data.retData;
       pagination.total = data.totalNum;
     } finally {
@@ -283,6 +313,7 @@
   const reset = () => {
     searchForm.value = {};
     formModel.value = {};
+    unusedList.value = [];
     pagination.current = 1;
     fetchData({
       startPage: basePagination.current,
@@ -305,6 +336,13 @@
    */
   const handleEdit = async (record) => {
     modalType.value = 'edit';
+    const options = [
+      {
+        chargeCode: record.chargeCode,
+        chargeName: record.chargeName,
+      },
+    ];
+    unusedList.value = options;
     const filterRes = filterFields(cloneDeep(record));
     formModel.value = filterRes;
     setVisible(true);
@@ -319,16 +357,16 @@
       'groupId',
       'status',
       'limitType',
-      'srcChargeCode',
+      'chargeCode',
     ] as const;
     return filterParams<IGroupEdit>(needFields, cloneDeep(record));
   };
   /**
    * 删除角色
-   * @param groupId
+   * @param id
    */
   const handleDelete = async (groupId: string) => {
-    await deleteRuleMutexGroup({ seqIds: groupId.toString() });
+    await deleteRuleDependKind({ seqIds: groupId.toString() });
     Message.success('操作成功！');
     fetchData({
       startPage: basePagination.current,

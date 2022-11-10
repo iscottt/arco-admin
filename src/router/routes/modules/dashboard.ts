@@ -5,8 +5,9 @@ const DASHBOARD: AppRouteRecordRaw = {
   path: '/dashboard',
   name: 'dashboard',
   component: DEFAULT_LAYOUT,
+  redirect: '/dashboard/workplace',
   meta: {
-    locale: '仪表盘',
+    locale: '首页',
     requiresAuth: true,
     icon: 'icon-dashboard',
     order: 0,
@@ -20,6 +21,7 @@ const DASHBOARD: AppRouteRecordRaw = {
         locale: '工作台',
         requiresAuth: true,
         roles: ['*'],
+        activeMenu: 'dashboard',
       },
     },
   ],
